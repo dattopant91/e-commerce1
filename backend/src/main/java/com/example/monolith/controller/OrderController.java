@@ -72,11 +72,13 @@ public class OrderController {
         String username = (String) payload.get("username");
         Double totalAmount = Double.valueOf(payload.get("totalAmount").toString());
         String productsDescription = (String) payload.get("productsDescription");
+        String address = (String) payload.get("address");
 
         Order order = new Order();
         order.setUsername(username);
         order.setTotalAmount(totalAmount);
         order.setProductsDescription(productsDescription);
+        order.setAddress(address != null ? address : "No address specified");
         order.setStatus("PENDING");
         order.setOrderDate(LocalDateTime.now());
         

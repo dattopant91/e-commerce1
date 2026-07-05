@@ -20,5 +20,6 @@ public class Order {
     private Double totalAmount;
     private String productsDescription; // Comma separated items summary
     private String status; // "PENDING", "APPROVED", "REJECTED", "PAID"
+    private String address; // Shipping delivery address
     private LocalDateTime orderDate;
 }

@@ -664,6 +664,7 @@ export class PaymentComponent implements OnInit {
       username: username,
       totalAmount: this.total,
       productsDescription: productsDesc || 'Products Purchase Bundle',
+      address: sessionStorage.getItem('shippingAddress') || 'No address specified',
       status: 'PENDING'
     };
 

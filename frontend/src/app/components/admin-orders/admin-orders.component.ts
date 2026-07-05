@@ -92,6 +92,10 @@ import { AuthService } from '../../services/auth.service';
                 <span class="info-label"><i class="pi pi-wallet"></i> Total Amount</span>
                 <span class="info-val text-cyan font-bold" style="font-size: 1.15rem;">{{ selectedOrder.totalAmount | currency }}</span>
               </div>
+              <div class="info-row" style="flex-direction: column; align-items: flex-start; gap: 0.25rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem;">
+                <span class="info-label"><i class="pi pi-map-marker"></i> Shipping Address</span>
+                <span class="info-val" style="color: #cbd5e1; font-weight: normal; font-size: 0.85rem; line-height: 1.4; margin-top: 0.25rem; text-align: left;">{{ selectedOrder.address || 'No address specified' }}</span>
+              </div>
             </div>
 
             <div class="products-list-section">
@@ -442,6 +446,7 @@ export class AdminOrdersComponent implements OnInit {
     this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
+        alert('Order #' + orderId + ' successfully approved! Customer delivery has been processed.');
       },
       error: () => {
         // Local state sync mode fallback
@@ -452,6 +457,7 @@ export class AdminOrdersComponent implements OnInit {
         if (this.selectedOrder && this.selectedOrder.id === orderId) {
           this.selectedOrder.status = 'APPROVED';
         }
+        alert('Order approved (local preview mode)');
       }
     });
   }
@@ -460,6 +466,7 @@ export class AdminOrdersComponent implements OnInit {
     this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
+        alert('Order #' + orderId + ' has been rejected.');
       },
       error: () => {
         // Local state sync mode fallback
@@ -470,6 +477,7 @@ export class AdminOrdersComponent implements OnInit {
         if (this.selectedOrder && this.selectedOrder.id === orderId) {
           this.selectedOrder.status = 'REJECTED';
         }
+        alert('Order rejected (local preview mode)');
       }
     });
   }
