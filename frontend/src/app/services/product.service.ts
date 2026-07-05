@@ -7,7 +7,7 @@ import { Product } from '../models/product.model';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:8080/api/products';
+  private apiUrl = 'https://e-commerce1-e3ny.onrender.com/api/products';
 
   constructor(private http: HttpClient) { }
 

@@ -409,7 +409,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   loadAllOrders() {
-    this.http.get<any[]>('http://localhost:8080/api/orders').subscribe({
+    this.http.get<any[]>('https://e-commerce1-e3ny.onrender.com/api/orders').subscribe({
       next: (data) => {
         this.allOrders = data.sort((a, b) => b.id - a.id);
         // Reselect order to sync changes if open
@@ -439,7 +439,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   approveOrder(orderId: number) {
-    this.http.put(`http://localhost:8080/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
       },
@@ -457,7 +457,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   rejectOrder(orderId: number) {
-    this.http.put(`http://localhost:8080/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
       },

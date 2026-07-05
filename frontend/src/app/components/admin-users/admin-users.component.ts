@@ -204,7 +204,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   loadUsers() {
-    this.http.get<any[]>('http://localhost:8080/api/auth/users').subscribe({
+    this.http.get<any[]>('https://e-commerce1-e3ny.onrender.com/api/auth/users').subscribe({
       next: (data) => {
         this.usersList = data;
       },
@@ -221,7 +221,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   approveUser(userId: number, selectRole: string) {
-    this.http.put(`http://localhost:8080/api/auth/users/${userId}/approve?role=${selectRole}`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/auth/users/${userId}/approve?role=${selectRole}`, {}).subscribe({
       next: () => {
         this.loadUsers();
         alert('User successfully approved and role updated!');

@@ -14,7 +14,7 @@ export interface CartItem {
 export class CartService {
   private cartItems: CartItem[] = [];
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
-  private cartUrl = 'http://localhost:8080/api/cart';
+  private cartUrl = 'https://e-commerce1-e3ny.onrender.com/api/cart';
 
   cart$ = this.cartSubject.asObservable();
 

@@ -136,7 +136,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.http.get<any[]>('http://localhost:8080/api/auth/users').subscribe({
+    this.http.get<any[]>('https://e-commerce1-e3ny.onrender.com/api/auth/users').subscribe({
       next: (data) => {
         this.usersList = data;
       },
@@ -153,7 +153,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAllOrders(): void {
-    this.http.get<any[]>('http://localhost:8080/api/orders').subscribe({
+    this.http.get<any[]>('https://e-commerce1-e3ny.onrender.com/api/orders').subscribe({
       next: (data) => {
         this.allOrders = data.sort((a, b) => b.id - a.id);
       },
@@ -168,7 +168,7 @@ export class DashboardComponent implements OnInit {
   }
 
   approveOrder(orderId: number): void {
-    this.http.put(`http://localhost:8080/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
         if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
@@ -188,7 +188,7 @@ export class DashboardComponent implements OnInit {
   }
 
   rejectOrder(orderId: number): void {
-    this.http.put(`http://localhost:8080/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
         if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
@@ -217,7 +217,7 @@ export class DashboardComponent implements OnInit {
   }
 
   approveUser(userId: number, selectRole: string): void {
-    this.http.put(`http://localhost:8080/api/auth/users/${userId}/approve?role=${selectRole}`, {}).subscribe({
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/auth/users/${userId}/approve?role=${selectRole}`, {}).subscribe({
       next: () => {
         this.loadUsers();
         alert('User successfully approved and role updated!');

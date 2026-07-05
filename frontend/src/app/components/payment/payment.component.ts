@@ -641,7 +641,7 @@ export class PaymentComponent implements OnInit {
     };
     
     // Trigger the microservices order placement
-    this.http.post('http://localhost:8080/api/payments/process', payload).subscribe({
+    this.http.post('https://e-commerce1-e3ny.onrender.com/api/payments/process', payload).subscribe({
       next: (res: any) => {
         this.saveOrder(payload.orderId, res.transactionId);
       },
@@ -667,7 +667,7 @@ export class PaymentComponent implements OnInit {
       status: 'PENDING'
     };
 
-    this.http.post('http://localhost:8080/api/orders', orderPayload).subscribe({
+    this.http.post('https://e-commerce1-e3ny.onrender.com/api/orders', orderPayload).subscribe({
       next: (orderRes: any) => {
         this.placedOrder = {
           orderId: orderRes.id || orderId,
