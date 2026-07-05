@@ -1,0 +1,405 @@
+<div class="dashboard-container">
+  <!-- Brand Header Bar -->
+  <header class="dashboard-header glass-card">
+    <div class="brand">
+      <i class="pi pi-bolt logo-icon"></i>
+      <h1>Apex E-Commerce Hub</h1>
+      <span class="role-tag" *ngIf="isProductUser">{{ isAdmin ? 'Admin Console' : 'Vendor Console' }}</span>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Search Bar & Sorting (Non-Admin Storefront only) -->
+      <div class="search-bar" *ngIf="!isAdmin">
+        <i class="pi pi-search search-icon"></i>
+        <input type="text" placeholder="Search catalog..." class="search-input" [(ngModel)]="searchQuery" (input)="applyFilter()" />
+        <select class="sort-select" [(ngModel)]="sortOption" (change)="applyFilter()">
+          <option value="default">Sort: Featured</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">Name: A to Z</option>
+        </select>
+      </div>
+
+      <!-- Shopping Cart (Non-Admin only) -->
+      <div class="cart-container" [routerLink]="['/cart']" *ngIf="!isAdmin" [class.bounce]="cartAnimating">
+        <i class="pi pi-shopping-cart cart-icon"></i>
+        <span class="cart-badge-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
+      </div>
+
+      <!-- User Welcome & Actions -->
+      <div class="user-info" *ngIf="username" [routerLink]="['/profile']" style="cursor: pointer;">
+        <div class="avatar-circle">
+          <span>{{ username.charAt(0).toUpperCase() }}</span>
+        </div>
+        <div class="welcome-box">
+          <span class="welcome-text">Welcome, {{ username }}</span>
+          <small class="role-desc">{{ isAdmin ? 'Administrator' : 'Customer' }}</small>
+        </div>
+        <button pButton type="button" icon="pi pi-sign-out" class="p-button-rounded p-button-text p-button-danger logout-btn" (click)="logout(); $event.stopPropagation();" title="Logout"></button>
+      </div>
+
+      <!-- Guest Login / Signup -->
+      <div class="auth-buttons" *ngIf="!username">
+        <button pButton type="button" label="Login" [routerLink]="['/login']" class="p-button-text p-button-cyan"></button>
+        <button pButton type="button" label="Signup" [routerLink]="['/signup']" class="p-button-cyan"></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== ADMIN / VENDOR DASHBOARD LAYOUT ==================== -->
+  <div *ngIf="isProductUser" class="admin-content animate-fade-in">
+    <!-- Metrics Grid (Admin Only) -->
+    <div class="metrics-grid" *ngIf="isAdmin">
+      <div class="metric-card glass-card">
+        <div class="metric-icon revenue-icon">
+          <i class="pi pi-dollar"></i>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">Total Revenue</span>
+          <h2 class="metric-value">{{ totalSales | currency:'USD':'symbol':'1.2-2' }}</h2>
+          <span class="metric-change positive"><i class="pi pi-arrow-up"></i> +12.4% this month</span>
+        </div>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="metric-icon orders-icon">
+          <i class="pi pi-shopping-bag"></i>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">Active Orders</span>
+          <h2 class="metric-value">{{ ordersCount }}</h2>
+          <span class="metric-change positive"><i class="pi pi-arrow-up"></i> +8.1% vs last week</span>
+        </div>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="metric-icon inventory-icon">
+          <i class="pi pi-box"></i>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">Total Products</span>
+          <h2 class="metric-value">{{ totalProducts }}</h2>
+          <span class="metric-change neutral">Stable stock status</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Table Section -->
+    <div class="table-section glass-card">
+      <div class="table-header">
+        <h3>Active Product Inventory</h3>
+        <div style="display: flex; gap: 0.5rem;">
+          <button pButton type="button" label="Manage Users" icon="pi pi-users" class="p-button-outlined p-button-cyan" [routerLink]="['/admin/users']" *ngIf="isAdmin"></button>
+          <button pButton type="button" label="Manage Orders" icon="pi pi-shopping-bag" class="p-button-outlined p-button-cyan" [routerLink]="['/admin/orders']" *ngIf="isAdmin"></button>
+          <button pButton type="button" label="Add New Product" icon="pi pi-plus" class="p-button-cyan" (click)="openNewProductDialog()"></button>
+        </div>
+      </div>
+
+      <p-table [value]="products" class="custom-table" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td><img [src]="product.imageUrl" [alt]="product.name" class="product-thumb" /></td>
+            <td>
+              <span class="product-name">{{ product.name }}</span>
+              <small class="product-desc">{{ product.description }}</small>
+            </td>
+            <td><span class="badge">{{ product.category }}</span></td>
+            <td class="price">{{ product.price | currency:'USD' }}</td>
+            <td>{{ product.stock }}</td>
+            <td>
+              <span class="status-badge" [class.approved]="product.status === 'APPROVED'" [class.pending]="product.status === 'PENDING'" [class.rejected]="product.status === 'REJECTED'">
+                {{ product.status || 'PENDING' }}
+              </span>
+            </td>
+            <td class="action-buttons-cell">
+              <div style="display: flex; gap: 0.25rem;">
+                <!-- Admin approval options -->
+                <button pButton type="button" icon="pi pi-check" class="p-button-rounded p-button-text p-button-success" (click)="approveProduct(product); $event.stopPropagation();" title="Approve Product" *ngIf="isAdmin && product.status === 'PENDING'"></button>
+                <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger" (click)="rejectProduct(product); $event.stopPropagation();" title="Reject Product" *ngIf="isAdmin && product.status === 'PENDING'"></button>
+                
+                <button pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-cyan" (click)="editProduct(product); $event.stopPropagation();" title="Edit"></button>
+                <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProduct(product); $event.stopPropagation();" title="Delete"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- ==================== USER CATALOG STOREFRONT ==================== -->
+  <div *ngIf="!isProductUser" class="user-content animate-fade-in">
+    <!-- Hero Banner Section -->
+    <section class="hero-banner glass-card">
+      <div class="hero-overlay"></div>
+      <div class="hero-text-content">
+        <span class="hero-tag">Summer Tech Fest</span>
+        <h2>Discover Next-Gen Innovations</h2>
+        <p>Explore curated premium gear designed to elevate your digital ecosystem. Get up to 40% discount on selected audio & wearables.</p>
+        <button pButton label="Explore Catalog" class="p-button-cyan hero-btn" icon="pi pi-compass"></button>
+      </div>
+    </section>
+
+    <!-- Categories Filter Bar -->
+    <div class="categories-bar">
+      <button 
+        *ngFor="let cat of categories" 
+        class="category-btn" 
+        [class.active]="selectedCategory === cat" 
+        (click)="filterByCategory(cat)">
+        {{ cat }}
+      </button>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <div class="product-card glass-card" *ngFor="let product of filteredProducts">
+        <div class="card-image-wrap" (click)="openProductDetails(product)" style="cursor: pointer;">
+          <img [src]="product.imageUrl" [alt]="product.name" class="card-img" />
+          <span class="card-category-badge">{{ product.category }}</span>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title" (click)="openProductDetails(product)" style="cursor: pointer;">{{ product.name }}</h3>
+          <p class="card-desc">{{ product.description }}</p>
+          <div class="card-bottom">
+            <span class="card-price">{{ product.price | currency }}</span>
+            <span class="card-stock-alert" [class.low]="product.stock < 10">
+              {{ product.stock < 10 ? 'Only ' + product.stock + ' left!' : 'In Stock' }}
+            </span>
+          </div>
+          <div class="card-actions">
+            <button 
+              pButton 
+              type="button" 
+              label="Add to Cart" 
+              icon="pi pi-cart-plus" 
+              class="p-button-cyan w-full add-to-cart-btn" 
+              (click)="addToCart(product)">
+              <!-- Flying floating +1 feedback element -->
+              <span class="fly-badge" *ngIf="animatedProductId === product.id">+1 Added!</span>
+            </button>
+          </div>
+        </div>
+    </div>
+    <!-- Load More Button -->
+    <div class="load-more-container" *ngIf="hasMoreProducts">
+      <button pButton label="Load More Products" icon="pi pi-angle-down" class="p-button-outlined p-button-cyan load-more-btn" (click)="loadMore()"></button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Product Dialog Overlay (Admin only) -->
+  <p-dialog [header]="isEditMode ? 'Update Product Details' : 'Register New Product'" [(visible)]="displayDialog" [modal]="true" [style]="{ width: '450px' }" styleClass="custom-dialog" [appendTo]="'body'">
+    <div class="dialog-form">
+      <div class="form-field">
+        <label for="name">Product Name</label>
+        <input id="name" type="text" pInputText [(ngModel)]="newProduct.name" placeholder="Enter product name" />
+      </div>
+      <div class="form-field">
+        <label for="desc">Description</label>
+        <input id="desc" type="text" pInputText [(ngModel)]="newProduct.description" placeholder="Brief summary" />
+      </div>
+      <div class="form-field">
+        <label for="category">Category</label>
+        <input id="category" type="text" pInputText [(ngModel)]="newProduct.category" placeholder="Electronics, Apparel, etc." />
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="price">Price ($)</label>
+          <p-inputNumber id="price" [(ngModel)]="newProduct.price" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+        </div>
+        <div class="form-field">
+          <label for="stock">Initial Stock</label>
+          <p-inputNumber id="stock" [(ngModel)]="newProduct.stock"></p-inputNumber>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="imageUrl">Image URL</label>
+        <input id="imageUrl" type="text" pInputText [(ngModel)]="newProduct.imageUrl" placeholder="Image URL link" />
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cancel" class="p-button-text p-button-secondary" (click)="displayDialog = false"></button>
+      <button pButton type="button" label="Save Product" class="p-button-cyan" (click)="saveProduct()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Product Details Dialog Overlay -->
+  <p-dialog header="Product Details" [(visible)]="displayDetailsDialog" [modal]="true" [style]="{ width: '550px' }" styleClass="custom-dialog" [appendTo]="'body'">
+    <div class="detail-dialog-content" *ngIf="selectedDetailProduct">
+      <div class="detail-image-wrap">
+        <img [src]="selectedDetailProduct.imageUrl" [alt]="selectedDetailProduct.name" class="detail-large-img" />
+      </div>
+      <div class="detail-body-info">
+        <span class="detail-cat-badge">{{ selectedDetailProduct.category }}</span>
+        <h2 class="detail-title">{{ selectedDetailProduct.name }}</h2>
+        <p class="detail-long-desc">{{ selectedDetailProduct.description }}</p>
+        
+        <div class="detail-meta-row">
+          <div class="detail-price-box">
+            <span class="meta-label">Price</span>
+            <span class="meta-val price-val">{{ selectedDetailProduct.price | currency }}</span>
+          </div>
+          <div class="detail-stock-box">
+            <span class="meta-label">Availability</span>
+            <span class="meta-val stock-val" [class.low]="selectedDetailProduct.stock < 10">
+              {{ selectedDetailProduct.stock }} Units ({{ selectedDetailProduct.stock < 10 ? 'Low Stock' : 'In Stock' }})
+            </span>
+          </div>
+        </div>
+        
+        <div class="detail-actions-row">
+          <button pButton type="button" label="Add to Cart" icon="pi pi-cart-plus" class="p-button-cyan w-full detail-add-btn" (click)="addToCart(selectedDetailProduct); displayDetailsDialog = false;"></button>
+        </div>
+      </div>
+    </div>
+  </p-dialog>
+
+  <!-- User Management Approval Dialog (Admin Only) -->
+  <p-dialog header="User Account Approvals" [(visible)]="displayUserManagement" [modal]="true" [style]="{ width: '800px' }" styleClass="custom-dialog" [appendTo]="'body'">
+    <div class="user-mgmt-content" style="padding-top: 1rem;">
+      <p style="color: #94a3b8; margin-bottom: 1.5rem;">Review and approve pending registrations, and delegate user roles (Customer, Vendor, Admin).</p>
+      
+      <p-table [value]="usersList" class="custom-table" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td><strong style="color: #f8fafc;">{{ user.username }}</strong></td>
+            <td>{{ user.email || 'N/A' }}</td>
+            <td>
+              <span class="status-badge approved" *ngIf="user.role === 'admin'">Admin</span>
+              <span class="status-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);" *ngIf="user.role === 'PRODUCT_USER'">Vendor</span>
+              <span class="status-badge pending" *ngIf="user.role === 'ROLE_USER'">Customer</span>
+            </td>
+            <td>
+              <span class="status-badge approved" *ngIf="user.approved">Approved</span>
+              <span class="status-badge pending" *ngIf="!user.approved">Pending Approval</span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 0.5rem; align-items: center;" *ngIf="!user.approved">
+                <select #roleSelect class="sort-select" style="margin: 0;">
+                  <option value="ROLE_USER">Customer</option>
+                  <option value="PRODUCT_USER">Product Vendor</option>
+                  <option value="admin">Administrator</option>
+                </select>
+                <button pButton type="button" label="Approve" class="p-button-cyan p-button-sm" (click)="approveUser(user.id, roleSelect.value); $event.stopPropagation();" style="padding: 0.35rem 1rem !important; font-size: 0.85rem !important;"></button>
+              </div>
+              <span *ngIf="user.approved" class="text-muted" style="color: #64748b; font-size: 0.85rem;">No action required</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-dialog>
+
+  <!-- Order Management Dialog (Admin Only) -->
+  <p-dialog header="Order Placement Reviews" [(visible)]="displayOrderManagement" [modal]="true" [style]="{ width: '900px' }" styleClass="custom-dialog" [appendTo]="'body'">
+    <div class="user-mgmt-content" style="padding-top: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <p style="color: #94a3b8; margin: 0;">Review, Approve, or Reject all user orders placed across the system.</p>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="pendingFilter" [(ngModel)]="showOnlyPendingOrders" style="cursor: pointer; transform: scale(1.2);" />
+          <label for="pendingFilter" style="color: #f8fafc; font-size: 0.9rem; cursor: pointer; user-select: none; font-weight: 600;">Show Pending Orders Only</label>
+        </div>
+      </div>
+      
+      <p-table [value]="showOnlyPendingOrders ? getPendingOrders() : allOrders" class="custom-table" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Products Purchased</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-order>
+          <tr (click)="openOrderApprovalDetails(order); $event.stopPropagation();" style="cursor: pointer;" class="hover-row">
+            <td class="order-id">#{{ order.id }}</td>
+            <td><strong style="color: #f8fafc;">{{ order.username }}</strong></td>
+            <td>{{ order.orderDate | date:'medium' }}</td>
+            <td style="color: #cbd5e1; max-width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" [title]="order.productsDescription || 'E-Commerce products bundle'">
+              {{ order.productsDescription || 'E-Commerce products bundle' }}
+            </td>
+            <td class="price">{{ order.totalAmount | currency }}</td>
+            <td>
+              <span class="status-badge" [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" [class.pending]="order.status === 'PENDING'" [class.rejected]="order.status === 'REJECTED'">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>
+              <button pButton type="button" icon="pi pi-search-plus" class="p-button-rounded p-button-text p-button-cyan p-button-sm" (click)="openOrderApprovalDetails(order); $event.stopPropagation();" title="View Details" style="padding: 0.25rem !important; height: 32px; width: 32px;"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-dialog>
+
+  <!-- Order Details & Approval Modal Panel Dialog (Admin Only) -->
+  <p-dialog header="Order Approval Panel" [(visible)]="displayOrderDetailsDialog" [modal]="true" [style]="{ width: '500px' }" styleClass="custom-dialog" [appendTo]="'body'">
+    <div class="detail-dialog-content" *ngIf="selectedOrderForApproval" style="padding-top: 1rem;">
+      <div class="detail-body-info" style="gap: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1rem; width: 100%;">
+          <h2 class="detail-title" style="font-size: 1.35rem; font-weight: 800; color: #f8fafc; margin: 0;">Order #{{ selectedOrderForApproval.id }}</h2>
+          <span class="status-badge" [class.approved]="selectedOrderForApproval.status === 'APPROVED' || selectedOrderForApproval.status === 'PAID'" [class.pending]="selectedOrderForApproval.status === 'PENDING'" [class.rejected]="selectedOrderForApproval.status === 'REJECTED'">
+            {{ selectedOrderForApproval.status }}
+          </span>
+        </div>
+        
+        <div class="user-details-list" style="width: 100%; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+          <div class="detail-row" style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span class="detail-label" style="color: #64748b; display: flex; align-items: center; gap: 0.5rem;"><i class="pi pi-user"></i> Customer Name</span>
+            <span class="detail-val" style="color: #f8fafc; font-weight: 600;">{{ selectedOrderForApproval.username }}</span>
+          </div>
+          <div class="detail-row" style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span class="detail-label" style="color: #64748b; display: flex; align-items: center; gap: 0.5rem;"><i class="pi pi-calendar"></i> Purchase Date</span>
+            <span class="detail-val" style="color: #cbd5e1;">{{ selectedOrderForApproval.orderDate | date:'medium' }}</span>
+          </div>
+          <div class="detail-row" style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span class="detail-label" style="color: #64748b; display: flex; align-items: center; gap: 0.5rem;"><i class="pi pi-wallet"></i> Total Amount</span>
+            <span class="detail-val price-val" style="color: #22d3ee; font-weight: 700; font-size: 1.15rem;">{{ selectedOrderForApproval.totalAmount | currency }}</span>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; width: 100%; margin-top: 0.5rem;">
+          <h4 style="color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; margin: 0 0 0.75rem 0; letter-spacing: 0.05em; font-weight: 700;">Purchased Products List</h4>
+          <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 1rem; color: #cbd5e1; max-height: 180px; overflow-y: auto;">
+            <p style="margin: 0; line-height: 1.6; font-size: 0.95rem; white-space: pre-line;">
+              {{ selectedOrderForApproval.productsDescription || 'E-Commerce products bundle' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons inside dialog -->
+        <div style="display: flex; gap: 1rem; width: 100%; margin-top: 1.25rem;" *ngIf="selectedOrderForApproval.status === 'PENDING'">
+          <button pButton type="button" label="Approve & Ship" icon="pi pi-check" class="p-button-success w-full" (click)="approveOrder(selectedOrderForApproval.id); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important; border: none !important;"></button>
+          <button pButton type="button" label="Reject" icon="pi pi-times" class="p-button-danger p-button-outlined w-full" (click)="rejectOrder(selectedOrderForApproval.id); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important;"></button>
+        </div>
+        <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.9rem; margin-top: 1rem;" *ngIf="selectedOrderForApproval.status !== 'PENDING'">
+          <i class="pi pi-info-circle"></i> This order has already been finalized.
+        </div>
+      </div>
+    </div>
+  </p-dialog>
+</div>

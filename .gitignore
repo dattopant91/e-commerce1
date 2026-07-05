@@ -1,0 +1,30 @@
+# Dependency directories
+**/node_modules/
+**/target/
+
+# Angular build output
+**/dist/
+**/.angular/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Log files
+*.log
+logs/
+
+# Compiled files
+*.class
+*.jar
+*.war
+
+# System files
+.DS_Store
+Thumbs.db
