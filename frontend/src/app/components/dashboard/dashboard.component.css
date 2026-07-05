@@ -815,3 +815,150 @@
 .hover-row:hover {
   background: rgba(255, 255, 255, 0.03) !important;
 }
+
+/* ==================== RESPONSIVE MEDIA QUERIES ==================== */
+@media (max-width: 992px) {
+  .hero-banner {
+    padding: 2rem;
+  }
+  .hero-text-content h2 {
+    font-size: 1.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .brand {
+    justify-content: center;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .search-bar {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-input {
+    width: 100% !important;
+  }
+
+  .sort-select {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .user-info {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-banner {
+    padding: 1.5rem;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .hero-overlay {
+    width: 100%;
+    opacity: 0.4;
+  }
+
+  .hero-text-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .hero-text-content p {
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .table-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .table-header div {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Table responsive card representation */
+  ::ng-deep .custom-table table,
+  ::ng-deep .custom-table thead,
+  ::ng-deep .custom-table tbody,
+  ::ng-deep .custom-table th,
+  ::ng-deep .custom-table td,
+  ::ng-deep .custom-table tr {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  ::ng-deep .custom-table thead {
+    display: none !important;
+  }
+
+  ::ng-deep .custom-table tr {
+    margin-bottom: 1rem !important;
+    background: rgba(30, 41, 59, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem !important;
+  }
+
+  ::ng-deep .custom-table td {
+    text-align: right !important;
+    padding: 0.5rem 0.75rem !important;
+    border: none !important;
+    position: relative !important;
+  }
+
+  ::ng-deep .custom-table td::before {
+    content: attr(data-label) ":";
+    float: left !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+  }
+
+  ::ng-deep .custom-table td[data-label="Image"] {
+    text-align: center !important;
+  }
+
+  ::ng-deep .custom-table td[data-label="Image"]::before {
+    display: none !important;
+  }
+
+  .product-thumb {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+  }
+
+  .action-buttons-cell {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
