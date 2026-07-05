@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -6,52 +6,306 @@ import { TableModule } from 'primeng/table';
 import { CartService, CartItem } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
   imports: [CommonModule, CardModule, ButtonModule, TableModule, RouterModule],
   template: `
-    <div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+    <div class="cart-outer-container animate-fade-in">
       <p-card header="Shopping Cart" styleClass="glass-card">
-        <div *ngIf="items.length === 0" style="text-align: center; padding: 2rem;">
-          <p style="color: #94a3b8;">Your cart is empty.</p>
-          <button pButton label="Back to Dashboard" routerLink="/" class="p-button-cyan p-button-outlined"></button>
+        <!-- EMPTY CART STATE -->
+        <div *ngIf="items.length === 0" class="empty-state-box">
+          <i class="pi pi-shopping-cart empty-cart-icon"></i>
+          <h2>Your cart is empty</h2>
+          <p>Explore our premium collections and add items to get started.</p>
+          <button pButton label="Start Shopping" routerLink="/" class="p-button-cyan mt-4"></button>
         </div>
+
+        <!-- ACTIVE CART LIST -->
         <div *ngIf="items.length > 0">
-          <p-table [value]="items">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-item>
-              <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.product.price | currency }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ (item.product.price * item.quantity) | currency }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
-            <h3>Total: {{ total | currency }}</h3>
-            <div style="display: flex; gap: 1rem;">
-              <button pButton label="Continue Shopping" routerLink="/" class="p-button-text p-button-cyan"></button>
+          <div class="table-wrapper">
+            <p-table [value]="items" class="custom-table" [responsiveLayout]="'scroll'">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th style="width: 150px; text-align: center;">Quantity</th>
+                  <th>Total</th>
+                  <th style="width: 80px; text-align: center;">Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'" class="product-thumb" alt="product" />
+                      <span class="product-name">{{ item.product.name }}</span>
+                    </div>
+                  </td>
+                  <td>{{ item.product.price | currency }}</td>
+                  <td>
+                    <div class="qty-control">
+                      <button pButton icon="pi pi-minus" class="p-button-text p-button-sm qty-btn" (click)="decreaseQty(item)" [disabled]="item.quantity <= 1"></button>
+                      <span class="qty-number">{{ item.quantity }}</span>
+                      <button pButton icon="pi pi-plus" class="p-button-text p-button-sm qty-btn" (click)="increaseQty(item)"></button>
+                    </div>
+                  </td>
+                  <td class="item-total">{{ (item.product.price * item.quantity) | currency }}</td>
+                  <td style="text-align: center;">
+                    <button pButton icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded remove-btn" (click)="removeItem(item.product.id)" title="Remove item"></button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <!-- FOOTER ACTIONS & CART TOTAL -->
+          <div class="cart-footer">
+            <div class="total-summary">
+              <span class="total-label">Total Amount:</span>
+              <span class="total-value">{{ total | currency }}</span>
+            </div>
+            
+            <div class="action-buttons">
+              <button pButton label="Continue Shopping" routerLink="/" class="p-button-text p-button-cyan p-button-outlined"></button>
               <button pButton label="Proceed to Checkout" (click)="proceedToCheckout()" class="p-button-cyan"></button>
             </div>
           </div>
         </div>
       </p-card>
     </div>
-  `
+  `,
+  styles: [`
+    .cart-outer-container {
+      max-width: 950px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+
+    ::ng-deep .glass-card {
+      background: rgba(30, 41, 59, 0.45) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Empty Cart State */
+    .empty-state-box {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .empty-cart-icon {
+      font-size: 4rem;
+      color: #475569;
+      margin-bottom: 1.5rem;
+    }
+
+    .empty-state-box h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .empty-state-box p {
+      color: #64748b;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .mt-4 {
+      margin-top: 1.5rem;
+    }
+
+    /* Table custom styles */
+    .table-wrapper {
+      background: rgba(15, 23, 42, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    ::ng-deep .custom-table .p-datatable-thead > tr > th {
+      background: rgba(15, 23, 42, 0.5) !important;
+      color: #94a3b8 !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      padding: 1rem !important;
+    }
+
+    ::ng-deep .custom-table .p-datatable-tbody > tr {
+      background: transparent !important;
+      color: #cbd5e1 !important;
+    }
+
+    ::ng-deep .custom-table .p-datatable-tbody > tr > td {
+      border-color: rgba(255, 255, 255, 0.05) !important;
+      padding: 1.25rem 1rem !important;
+      vertical-align: middle;
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .product-thumb {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .item-total {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    /* Quantity Control Styles */
+    .qty-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 0.25rem 0.5rem;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    ::ng-deep .qty-btn {
+      color: #22d3ee !important;
+      padding: 0.25rem !important;
+      width: 24px !important;
+      height: 24px !important;
+      border-radius: 50% !important;
+      transition: background 0.2s;
+    }
+
+    ::ng-deep .qty-btn:hover:not([disabled]) {
+      background: rgba(6, 182, 212, 0.1) !important;
+    }
+
+    ::ng-deep .qty-btn[disabled] {
+      opacity: 0.3 !important;
+      color: #64748b !important;
+    }
+
+    .qty-number {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f8fafc;
+      min-width: 1.5rem;
+      text-align: center;
+    }
+
+    /* Remove Button */
+    ::ng-deep .remove-btn {
+      color: #f87171 !important;
+      padding: 0.25rem !important;
+      transition: all 0.2s;
+    }
+
+    ::ng-deep .remove-btn:hover {
+      background: rgba(239, 68, 68, 0.1) !important;
+      transform: scale(1.1);
+    }
+
+    /* Footer total and buttons */
+    .cart-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .cart-footer {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: stretch;
+      }
+      .total-summary {
+        justify-content: space-between;
+      }
+      .action-buttons {
+        justify-content: space-between;
+      }
+    }
+
+    .total-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .total-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .total-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #22d3ee;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .p-button-cyan {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      padding: 0.65rem 1.75rem !important;
+      border-radius: 8px !important;
+    }
+
+    .p-button-cyan:hover {
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+    }
+
+    .p-button-cyan.p-button-outlined {
+      background: transparent !important;
+      border: 1px solid #06b6d4 !important;
+      color: #06b6d4 !important;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `]
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
   items: CartItem[] = [];
   total = 0;
+  private cartSub!: Subscription;
 
   constructor(
     private cartService: CartService,
@@ -60,8 +314,35 @@ export class CartComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.items = this.cartService.getCartItems();
-    this.total = this.cartService.getTotal();
+    // Reactive subscription to support live updating on increase/decrease/remove
+    this.cartSub = this.cartService.cart$.subscribe(items => {
+      this.items = items;
+      this.total = this.cartService.getTotal();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.cartSub) {
+      this.cartSub.unsubscribe();
+    }
+  }
+
+  increaseQty(item: CartItem) {
+    if (item.product.id) {
+      this.cartService.updateQuantity(item.product.id, item.quantity + 1);
+    }
+  }
+
+  decreaseQty(item: CartItem) {
+    if (item.product.id && item.quantity > 1) {
+      this.cartService.updateQuantity(item.product.id, item.quantity - 1);
+    }
+  }
+
+  removeItem(productId: number | undefined) {
+    if (productId) {
+      this.cartService.removeFromCart(productId);
+    }
   }
 
   proceedToCheckout() {

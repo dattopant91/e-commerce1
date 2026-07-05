@@ -287,7 +287,7 @@ import { CartService, CartItem } from '../../services/cart.service';
   `]
 })
 export class CheckoutComponent implements OnInit {
-  address: string = '123 Tech Lane, Silicon Valley, CA';
+  address: string = '';
   cartItems: CartItem[] = [];
   total: number = 0;
 
