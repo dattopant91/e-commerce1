@@ -26,37 +26,6 @@ public class OrderController {
     @Autowired
     private ProductRepository productRepository;
 
-    // --- CART ENDPOINTS ---
-    @GetMapping("/cart")
-    public ResponseEntity<List<CartItem>> getCartItems(@RequestParam String username) {
-        return ResponseEntity.ok(cartItemRepository.findByUsername(username));
-    }
-
-    @PostMapping("/cart")
-    public ResponseEntity<CartItem> addToCart(@RequestBody CartItem item) {
-        Optional<CartItem> opt = cartItemRepository.findByUsernameAndProductId(item.getUsername(), item.getProductId());
-        if (opt.isPresent()) {
-            CartItem existing = opt.get();
-            existing.setQuantity(existing.getQuantity() + item.getQuantity());
-            return ResponseEntity.ok(cartItemRepository.save(existing));
-        } else {
-            return ResponseEntity.ok(cartItemRepository.save(item));
-        }
-    }
-
-    @DeleteMapping("/cart/{itemId}")
-    public ResponseEntity<?> removeCartItem(@PathVariable Long itemId) {
-        cartItemRepository.deleteById(itemId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/cart")
-    @Transactional
-    public ResponseEntity<?> clearCart(@RequestParam String username) {
-        cartItemRepository.deleteByUsername(username);
-        return ResponseEntity.ok().build();
-    }
-
     // --- ORDER ENDPOINTS ---
     @GetMapping("/orders")
     public ResponseEntity<List<Order>> getOrders(@RequestParam(required = false) String username) {
