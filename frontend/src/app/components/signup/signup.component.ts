@@ -50,7 +50,10 @@ export class SignupComponent {
         alert('Registration successful! Please login.');
         this.router.navigate(['/login']);
       },
-      error: () => alert('Registration failed')
+      error: (err) => {
+        const errorMsg = (err.error && err.error.message) || err.error || 'Registration failed';
+        alert(errorMsg);
+      }
     });
   }
 }
