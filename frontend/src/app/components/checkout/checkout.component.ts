@@ -552,11 +552,11 @@ export class CheckoutComponent implements OnInit {
 
   isFormValid(): boolean {
     return (
-      this.emailOrPhone.trim().length > 3 &&
+      this.emailOrPhone.trim().length > 0 &&
       this.lastName.trim().length > 0 &&
-      this.addressLine1.trim().length > 3 &&
-      this.city.trim().length > 1 &&
-      this.pinCode.trim().length > 4
+      this.addressLine1.trim().length > 0 &&
+      this.city.trim().length > 0 &&
+      this.pinCode.trim().length > 0
     );
   }
 

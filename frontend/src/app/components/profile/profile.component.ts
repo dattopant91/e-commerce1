@@ -136,12 +136,17 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     ::ng-deep .profile-glass-card, ::ng-deep .orders-glass-card {
-      background: rgba(30, 41, 59, 0.45) !important;
+      background: var(--card-bg) !important;
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid var(--glass-border) !important;
       border-radius: 16px !important;
       box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+      color: var(--text-color) !important;
+    }
+
+    ::ng-deep .profile-glass-card .p-card-title, ::ng-deep .orders-glass-card .p-card-title {
+      color: var(--text-highlight) !important;
     }
 
     .user-card-header {
@@ -150,7 +155,7 @@ import { Router, RouterModule } from '@angular/router';
       align-items: center;
       text-align: center;
       padding-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--glass-border);
       margin-bottom: 1.5rem;
     }
 
@@ -172,7 +177,7 @@ import { Router, RouterModule } from '@angular/router';
     .user-card-header h2 {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text-highlight);
       margin: 0 0 0.35rem 0;
     }
 
@@ -203,14 +208,14 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     .detail-label {
-      color: #64748b;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
     .detail-val {
-      color: #cbd5e1;
+      color: var(--text-color);
       font-weight: 500;
     }
 
@@ -242,7 +247,7 @@ import { Router, RouterModule } from '@angular/router';
     /* Orders History Styles */
     .orders-subtitle {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin: 0 0 1.5rem 0;
     }
 
@@ -257,40 +262,41 @@ import { Router, RouterModule } from '@angular/router';
 
     .empty-orders-icon {
       font-size: 3rem;
-      color: #475569;
+      color: var(--text-muted);
     }
 
     .empty-orders p {
-      color: #64748b;
+      color: var(--text-muted);
       font-size: 0.95rem;
       margin: 0;
     }
 
     .orders-table-wrapper {
-      background: rgba(15, 23, 42, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--panel-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 12px;
       overflow: hidden;
     }
 
     /* Order History Table */
     ::ng-deep .custom-orders-table .p-datatable-thead > tr > th {
-      background: rgba(15, 23, 42, 0.5) !important;
-      color: #94a3b8 !important;
-      border-color: rgba(255, 255, 255, 0.05) !important;
+      background: var(--panel-bg) !important;
+      color: var(--text-muted) !important;
+      border-color: var(--glass-border) !important;
       font-size: 0.85rem !important;
       font-weight: 600 !important;
     }
 
     ::ng-deep .custom-orders-table .p-datatable-tbody > tr {
       background: transparent !important;
-      color: #cbd5e1 !important;
+      color: var(--text-color) !important;
     }
 
     ::ng-deep .custom-orders-table .p-datatable-tbody > tr > td {
-      border-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: var(--glass-border) !important;
       padding: 1rem !important;
       font-size: 0.9rem;
+      color: var(--text-color) !important;
     }
 
     .order-id {
@@ -347,8 +353,8 @@ import { Router, RouterModule } from '@angular/router';
       align-items: center;
       gap: 1.25rem;
       padding: 1.25rem;
-      background: rgba(15, 23, 42, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--item-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 12px;
     }
 
@@ -367,13 +373,13 @@ import { Router, RouterModule } from '@angular/router';
     .admin-stat-item h3 {
       font-size: 1.05rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text-color);
       margin: 0 0 0.15rem 0;
     }
 
     .admin-stat-item p {
       font-size: 0.85rem;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0;
     }
 
