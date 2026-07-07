@@ -76,7 +76,12 @@ import { Router, RouterModule } from '@angular/router';
                   </td>
                   <td class="order-amount">{{ order.totalAmount | currency }}</td>
                   <td>
-                    <span class="status-badge" [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" [class.pending]="order.status === 'PENDING'" [class.rejected]="order.status === 'REJECTED'">
+                    <span class="status-badge" 
+                          [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
+                          [class.shipped]="order.status === 'SHIPPED'"
+                          [class.delivered]="order.status === 'DELIVERED'"
+                          [class.pending]="order.status === 'PENDING'" 
+                          [class.rejected]="order.status === 'REJECTED'">
                       {{ order.status }}
                     </span>
                   </td>
@@ -327,6 +332,18 @@ import { Router, RouterModule } from '@angular/router';
       background: rgba(52, 211, 153, 0.15) !important;
       color: #34d399 !important;
       border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    }
+
+    .status-badge.shipped {
+      background: rgba(34, 211, 238, 0.15) !important;
+      color: #22d3ee !important;
+      border: 1px solid rgba(34, 211, 238, 0.3) !important;
+    }
+
+    .status-badge.delivered {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #10b981 !important;
+      border: 1px solid rgba(16, 185, 129, 0.3) !important;
     }
 
     .status-badge.pending {

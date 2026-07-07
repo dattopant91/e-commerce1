@@ -181,44 +181,32 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  approveOrder(orderId: number): void {
-    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=APPROVED`, {}).subscribe({
+  updateOrderStatus(orderId: number, status: string): void {
+    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=${status}`, {}).subscribe({
       next: () => {
         this.loadAllOrders();
         if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
-          this.selectedOrderForApproval.status = 'APPROVED';
+          this.selectedOrderForApproval.status = status;
         }
       },
       error: () => {
         const order = this.allOrders.find(o => o.id === orderId);
         if (order) {
-          order.status = 'APPROVED';
+          order.status = status;
         }
         if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
-          this.selectedOrderForApproval.status = 'APPROVED';
+          this.selectedOrderForApproval.status = status;
         }
       }
     });
   }
 
+  approveOrder(orderId: number): void {
+    this.updateOrderStatus(orderId, 'APPROVED');
+  }
+
   rejectOrder(orderId: number): void {
-    this.http.put(`https://e-commerce1-e3ny.onrender.com/api/orders/${orderId}/status?status=REJECTED`, {}).subscribe({
-      next: () => {
-        this.loadAllOrders();
-        if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
-          this.selectedOrderForApproval.status = 'REJECTED';
-        }
-      },
-      error: () => {
-        const order = this.allOrders.find(o => o.id === orderId);
-        if (order) {
-          order.status = 'REJECTED';
-        }
-        if (this.selectedOrderForApproval && this.selectedOrderForApproval.id === orderId) {
-          this.selectedOrderForApproval.status = 'REJECTED';
-        }
-      }
-    });
+    this.updateOrderStatus(orderId, 'REJECTED');
   }
 
   openOrderApprovalDetails(order: any): void {

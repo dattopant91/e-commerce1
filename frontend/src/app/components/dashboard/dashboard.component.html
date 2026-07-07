@@ -28,8 +28,18 @@
         </select>
       </div>
 
+      <!-- Order History shortcut button for customers -->
+      <button pButton type="button" 
+              icon="pi pi-history" 
+              label="My Orders"
+              class="p-button-rounded p-button-text p-button-cyan p-button-sm" 
+              [routerLink]="['/profile']" 
+              *ngIf="username && !isProductUser"
+              style="padding: 0.5rem 1.25rem !important; font-size: 0.85rem !important; font-weight: 600; margin-right: 0.75rem;">
+      </button>
+
       <!-- Shopping Cart (Non-Admin only) -->
-      <div class="cart-container" [routerLink]="['/cart']" *ngIf="!isAdmin" [class.bounce]="cartAnimating">
+      <div class="cart-container" [routerLink]="['/cart']" *ngIf="!isAdmin" [class.bounce]="cartAnimating" style="margin-right: 0.75rem;">
         <i class="pi pi-shopping-cart cart-icon"></i>
         <span class="cart-badge-count" *ngIf="cartCount > 0">{{ cartCount }}</span>
       </div>
@@ -409,7 +419,12 @@
             </td>
             <td class="price">{{ order.totalAmount | currency }}</td>
             <td>
-              <span class="status-badge" [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" [class.pending]="order.status === 'PENDING'" [class.rejected]="order.status === 'REJECTED'">
+              <span class="status-badge" 
+                    [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
+                    [class.shipped]="order.status === 'SHIPPED'"
+                    [class.delivered]="order.status === 'DELIVERED'"
+                    [class.pending]="order.status === 'PENDING'" 
+                    [class.rejected]="order.status === 'REJECTED'">
                 {{ order.status }}
               </span>
             </td>
@@ -428,7 +443,12 @@
       <div class="detail-body-info" style="gap: 1.25rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1rem; width: 100%;">
           <h2 class="detail-title" style="font-size: 1.35rem; font-weight: 800; color: #f8fafc; margin: 0;">Order #{{ selectedOrderForApproval.id }}</h2>
-          <span class="status-badge" [class.approved]="selectedOrderForApproval.status === 'APPROVED' || selectedOrderForApproval.status === 'PAID'" [class.pending]="selectedOrderForApproval.status === 'PENDING'" [class.rejected]="selectedOrderForApproval.status === 'REJECTED'">
+          <span class="status-badge" 
+                [class.approved]="selectedOrderForApproval.status === 'APPROVED' || selectedOrderForApproval.status === 'PAID'" 
+                [class.shipped]="selectedOrderForApproval.status === 'SHIPPED'"
+                [class.delivered]="selectedOrderForApproval.status === 'DELIVERED'"
+                [class.pending]="selectedOrderForApproval.status === 'PENDING'" 
+                [class.rejected]="selectedOrderForApproval.status === 'REJECTED'">
             {{ selectedOrderForApproval.status }}
           </span>
         </div>
@@ -457,13 +477,28 @@
           </div>
         </div>
 
-        <!-- Action Buttons inside dialog -->
-        <div style="display: flex; gap: 1rem; width: 100%; margin-top: 1.25rem;" *ngIf="selectedOrderForApproval.status === 'PENDING'">
-          <button pButton type="button" label="Approve & Ship" icon="pi pi-check" class="p-button-success w-full" (click)="approveOrder(selectedOrderForApproval.id); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important; border: none !important;"></button>
-          <button pButton type="button" label="Reject" icon="pi pi-times" class="p-button-danger p-button-outlined w-full" (click)="rejectOrder(selectedOrderForApproval.id); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important;"></button>
-        </div>
-        <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.9rem; margin-top: 1rem;" *ngIf="selectedOrderForApproval.status !== 'PENDING'">
-          <i class="pi pi-info-circle"></i> This order has already been finalized.
+        <!-- Action Buttons inside dialog (SHIPPED / DELIVERED tracking state updates) -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%; margin-top: 1.25rem;">
+          <!-- If PENDING: can approve or reject -->
+          <div style="display: flex; gap: 1rem; width: 100%;" *ngIf="selectedOrderForApproval.status === 'PENDING'">
+            <button pButton type="button" label="Approve Order" icon="pi pi-check-circle" class="p-button-success w-full" (click)="updateOrderStatus(selectedOrderForApproval.id, 'APPROVED'); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important; border: none !important;"></button>
+            <button pButton type="button" label="Reject Order" icon="pi pi-times" class="p-button-danger p-button-outlined w-full" (click)="updateOrderStatus(selectedOrderForApproval.id, 'REJECTED'); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important;"></button>
+          </div>
+
+          <!-- If APPROVED/PAID: can mark as Shipped -->
+          <div style="display: flex; gap: 1rem; width: 100%;" *ngIf="selectedOrderForApproval.status === 'APPROVED' || selectedOrderForApproval.status === 'PAID'">
+            <button pButton type="button" label="Mark as Shipped" icon="pi pi-send" class="p-button-cyan w-full" (click)="updateOrderStatus(selectedOrderForApproval.id, 'SHIPPED'); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important; border: none !important;"></button>
+          </div>
+
+          <!-- If SHIPPED: can mark as Delivered -->
+          <div style="display: flex; gap: 1rem; width: 100%;" *ngIf="selectedOrderForApproval.status === 'SHIPPED'">
+            <button pButton type="button" label="Mark as Delivered" icon="pi pi-check" class="p-button-success w-full" (click)="updateOrderStatus(selectedOrderForApproval.id, 'DELIVERED'); displayOrderDetailsDialog = false;" style="padding: 0.7rem !important; font-weight: 700 !important; border: none !important;"></button>
+          </div>
+
+          <!-- If DELIVERED or REJECTED: show finalized state -->
+          <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;" *ngIf="selectedOrderForApproval.status === 'DELIVERED' || selectedOrderForApproval.status === 'REJECTED'">
+            <i class="pi pi-info-circle"></i> This order status is: <strong>{{ selectedOrderForApproval.status }}</strong> (Finalized).
+          </div>
         </div>
       </div>
     </div>
