@@ -441,7 +441,7 @@ export class ProfileComponent implements OnInit {
   }
 
   loadOrders() {
-    this.http.get<any[]>(`https://e-commerce1-e3ny.onrender.com/api/orders/user/${this.username}`).subscribe({
+    this.http.get<any[]>(`https://e-commerce1-e3ny.onrender.com/api/orders?username=${this.username}`).subscribe({
       next: (data) => {
         // Sort orders so latest is first
         this.orders = data.sort((a, b) => b.id - a.id);
