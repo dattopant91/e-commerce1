@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit {
   // Add to Cart Animation state
   cartAnimating = false;
   animatedProductId: number | null = null;
+  isLightTheme = false;
 
   constructor(
     private productService: ProductService,
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isLightTheme = localStorage.getItem('theme') === 'light';
     this.cartService.cart$.subscribe(items => {
       this.cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
     });
@@ -105,6 +107,18 @@ export class DashboardComponent implements OnInit {
         this.loadAllOrders();
       }
     });
+  }
+
+  toggleTheme(): void {
+    this.isLightTheme = !this.isLightTheme;
+    const body = document.body;
+    if (this.isLightTheme) {
+      body.classList.add('light-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.remove('light-theme');
+      localStorage.setItem('theme', 'dark');
+    }
   }
 
   loadProducts(): void {

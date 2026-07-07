@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -10,126 +9,408 @@ import { CartService, CartItem } from '../../services/cart.service';
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, RouterModule, FormsModule],
+  imports: [CommonModule, ButtonModule, RouterModule, FormsModule],
   template: `
-    <div class="checkout-outer-container">
-      <p-card header="Delivery & Checkout" styleClass="glass-card">
-        <p style="color: #94a3b8; margin-bottom: 2rem;">Review your items and shipping details before completing your order.</p>
+    <div class="checkout-split-container animate-fade-in">
+      <!-- LEFT PANEL: CLIENT FORMS -->
+      <div class="left-form-panel">
+        <div class="checkout-logo" routerLink="/">Sandy Cart</div>
         
-        <!-- SECTION 1: ORDER SUMMARY (WITH REMOVE ACTION) -->
-        <div class="checkout-section">
-          <h3 class="section-title"><i class="pi pi-shopping-bag title-icon"></i> Order Summary</h3>
+        <!-- CONTACT SECTION -->
+        <div class="checkout-form-section">
+          <div class="section-header">
+            <h2>Contact</h2>
+            <a class="signin-link" *ngIf="!authService.isLoggedIn()" routerLink="/login">Sign in</a>
+          </div>
+          <div class="form-field">
+            <input type="text" class="shopify-input" placeholder="Email or mobile phone number" [(ngModel)]="emailOrPhone" />
+          </div>
+        </div>
+
+        <!-- DELIVERY SECTION -->
+        <div class="checkout-form-section mt-6">
+          <h2>Delivery</h2>
           
-          <div *ngIf="cartItems.length === 0" class="empty-state">
-            <i class="pi pi-shopping-cart empty-icon"></i>
-            <p>Your cart is empty. Add some products to place an order.</p>
-            <button pButton label="Go to Products Catalog" routerLink="/" class="p-button-cyan p-button-outlined mt-3"></button>
+          <div class="form-field">
+            <select class="shopify-select" [(ngModel)]="country">
+              <option value="India">India</option>
+              <option value="United States">United States</option>
+              <option value="United Kingdom">United Kingdom</option>
+            </select>
           </div>
 
-          <div *ngIf="cartItems.length > 0" class="items-list">
-            <div class="checkout-item" *ngFor="let item of cartItems">
+          <div class="form-row-2">
+            <div class="form-field">
+              <input type="text" class="shopify-input" placeholder="First name (optional)" [(ngModel)]="firstName" />
+            </div>
+            <div class="form-field">
+              <input type="text" class="shopify-input" placeholder="Last name" [(ngModel)]="lastName" />
+            </div>
+          </div>
+
+          <div class="form-field has-search">
+            <i class="pi pi-search search-input-icon"></i>
+            <input type="text" class="shopify-input pl-10" placeholder="Address" [(ngModel)]="addressLine1" />
+          </div>
+
+          <div class="form-field">
+            <input type="text" class="shopify-input" placeholder="Apartment, suite, etc. (optional)" [(ngModel)]="addressLine2" />
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-field">
+              <input type="text" class="shopify-input" placeholder="City" [(ngModel)]="city" />
+            </div>
+            <div class="form-field">
+              <select class="shopify-select" [(ngModel)]="state">
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <input type="text" class="shopify-input" placeholder="PIN code" [(ngModel)]="pinCode" />
+            </div>
+          </div>
+
+          <div class="checkbox-row mt-4">
+            <input type="checkbox" id="saveInfo" [(ngModel)]="saveInfo" />
+            <label for="saveInfo">Save this information for next time</label>
+          </div>
+        </div>
+
+        <!-- SHIPPING METHOD SECTION -->
+        <div class="checkout-form-section mt-8">
+          <h2>Shipping method</h2>
+          <div class="shipping-placeholder-box">
+            <span *ngIf="!addressLine1.trim()">Enter your shipping address to view available shipping methods.</span>
+            <div class="shipping-rate-row" *ngIf="addressLine1.trim()">
+              <div class="rate-left">
+                <i class="pi pi-truck"></i>
+                <span class="rate-name">Standard Delivery (Home/Office)</span>
+              </div>
+              <span class="rate-price">FREE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="navigation-footer mt-8">
+          <a routerLink="/cart" class="back-link"><i class="pi pi-angle-left"></i> Return to cart</a>
+          <button pButton label="Proceed to Payment" (click)="proceedToPayment()" [disabled]="!isFormValid()" class="p-button-cyan-shopify"></button>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: CART SUMMARY (GREY BG) -->
+      <div class="right-summary-panel">
+        <div class="summary-content">
+          <div class="summary-items-list">
+            <div class="summary-item" *ngFor="let item of cartItems">
               <div class="item-left">
-                <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'" class="item-img" alt="product" />
-                <div class="item-info">
-                  <h4 class="item-name">{{ item.product.name }}</h4>
-                  <span class="item-price">{{ item.product.price | currency }}</span>
-                  <span class="item-qty">Qty: {{ item.quantity }}</span>
+                <div class="image-wrapper">
+                  <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'" alt="product" />
+                  <span class="badge">{{ item.quantity }}</span>
                 </div>
+                <span class="item-name">{{ item.product.name }}</span>
               </div>
-              <div class="item-right">
-                <span class="item-subtotal">{{ (item.product.price * item.quantity) | currency }}</span>
-                <button pButton icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded remove-btn" (click)="removeItem(item.product.id)" title="Remove item"></button>
-              </div>
+              <span class="item-price">{{ (item.product.price * item.quantity) | currency:'INR':'symbol':'1.2-2' }}</span>
             </div>
+          </div>
 
-            <!-- TOTAL SUMMARY BLOCK -->
-            <div class="total-block">
-              <span class="total-label">Subtotal:</span>
-              <span class="total-val">{{ total | currency }}</span>
+          <!-- PRICING SUMMARY -->
+          <div class="pricing-summary-block mt-6">
+            <div class="pricing-row">
+              <span>Subtotal</span>
+              <span class="val">{{ total | currency:'INR':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="pricing-row mt-2">
+              <span>Shipping</span>
+              <span class="val text-muted">{{ addressLine1.trim() ? 'FREE' : 'Enter shipping address' }}</span>
+            </div>
+            <div class="pricing-total-row mt-4">
+              <span>Total</span>
+              <span class="val-large"><small>INR</small> {{ total | currency:'INR':'symbol':'1.2-2' }}</span>
             </div>
           </div>
         </div>
-
-        <!-- SECTION 2: SHIPPING ADDRESS -->
-        <div class="checkout-section border-top">
-          <h3 class="section-title"><i class="pi pi-map-marker title-icon"></i> Shipping Address</h3>
-          <textarea 
-            [(ngModel)]="address" 
-            rows="3" 
-            class="custom-textarea" 
-            placeholder="Type your complete delivery address here..."
-          ></textarea>
-        </div>
-
-        <!-- FOOTER ACTIONS -->
-        <div class="action-footer">
-          <button pButton label="Back to Cart" routerLink="/cart" class="p-button-text p-button-secondary"></button>
-          <button pButton label="Proceed to Payment" (click)="proceedToPayment()" [disabled]="!address.trim() || cartItems.length === 0" class="p-button-cyan"></button>
-        </div>
-      </p-card>
+      </div>
     </div>
   `,
   styles: [`
-    .checkout-outer-container {
-      max-width: 700px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
+    .checkout-split-container {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      min-height: 100vh;
+      background: var(--bg-gradient);
     }
 
-    ::ng-deep .glass-card {
-      background: rgba(30, 41, 59, 0.45) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
-      border-radius: 16px !important;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+    @media (max-width: 992px) {
+      .checkout-split-container {
+        grid-template-columns: 1fr;
+      }
+      .right-summary-panel {
+        order: -1;
+        min-height: auto !important;
+        border-left: none !important;
+        border-bottom: 1px solid var(--glass-border);
+        padding: 2rem 1.5rem !important;
+      }
+      .left-form-panel {
+        padding: 2rem 1.5rem !important;
+      }
     }
 
-    .checkout-section {
-      margin-bottom: 2rem;
-    }
-
-    .border-top {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 1.5rem;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f8fafc;
-      margin: 0 0 1.25rem 0;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .title-icon {
-      color: #06b6d4;
-    }
-
-    /* Checkout Items Layout */
-    .items-list {
+    /* Left Form Panel styles */
+    .left-form-panel {
+      padding: 4rem 4rem 4rem 10%;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      background: rgba(15, 23, 42, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 1.25rem;
+      max-width: 750px;
+      justify-self: end;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    .checkout-item {
+    .checkout-logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-highlight);
+      cursor: pointer;
+      margin-bottom: 2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .checkout-form-section h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-highlight);
+      margin: 0 0 1rem 0;
+    }
+
+    .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 1rem;
     }
 
-    .checkout-item:last-child {
-      padding-bottom: 0;
-      border-bottom: none;
+    .section-header h2 {
+      margin: 0;
+    }
+
+    .signin-link {
+      color: #06b6d4;
+      font-size: 0.9rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .signin-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Shopify Custom Inputs */
+    .form-field {
+      margin-bottom: 0.85rem;
+      position: relative;
+    }
+
+    .shopify-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-color);
+      border-radius: 5px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .shopify-input:focus {
+      border-color: #06b6d4;
+      box-shadow: 0 0 0 1px #06b6d4;
+    }
+
+    .shopify-select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-color);
+      border-radius: 5px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+    }
+
+    body.light-theme .shopify-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(15,23,42,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    }
+
+    .shopify-select:focus {
+      border-color: #06b6d4;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 0.85rem;
+    }
+
+    .has-search {
+      position: relative;
+    }
+
+    .search-input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .pl-10 {
+      padding-left: 2.75rem !important;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .checkbox-row input {
+      cursor: pointer;
+    }
+
+    /* Shipping Method Box */
+    .shipping-placeholder-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .shipping-rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .rate-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .rate-left i {
+      color: #06b6d4;
+    }
+
+    .rate-price {
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    /* Navigation Footer */
+    .navigation-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 1.5rem;
+    }
+
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      color: #06b6d4;
+    }
+
+    .p-button-cyan-shopify {
+      background: #06b6d4 !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      padding: 1rem 2rem !important;
+      border-radius: 5px !important;
+      font-size: 1rem !important;
+      transition: opacity 0.2s;
+    }
+
+    .p-button-cyan-shopify:hover {
+      opacity: 0.9;
+    }
+
+    .p-button-cyan-shopify[disabled] {
+      background: #475569 !important;
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+    }
+
+    /* Right Summary Panel styles */
+    .right-summary-panel {
+      padding: 4rem 10% 4rem 4rem;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--glass-border);
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .summary-content {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .summary-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 1.5rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .item-left {
@@ -138,161 +419,113 @@ import { CartService, CartItem } from '../../services/cart.service';
       gap: 1rem;
     }
 
-    .item-img {
-      width: 54px;
-      height: 54px;
-      object-fit: cover;
+    .image-wrapper {
+      position: relative;
+      width: 64px;
+      height: 64px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      background: #ffffff;
+      overflow: visible;
     }
 
-    .item-info {
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .image-wrapper .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #4b5563;
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
       display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .item-name {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #f8fafc;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-color);
+      max-width: 250px;
+      line-height: 1.4;
     }
 
     .item-price {
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
-
-    .item-qty {
-      font-size: 0.8rem;
-      color: #64748b;
-    }
-
-    .item-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .item-subtotal {
       font-weight: 600;
-      color: #f8fafc;
       font-size: 0.95rem;
+      color: var(--text-highlight);
     }
 
-    ::ng-deep .remove-btn {
-      color: #f87171 !important;
-      padding: 0.25rem !important;
-      transition: all 0.2s;
+    /* Pricing Summary Block */
+    .pricing-summary-block {
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 1.5rem;
     }
 
-    ::ng-deep .remove-btn:hover {
-      background: rgba(239, 68, 68, 0.1) !important;
-      transform: scale(1.1);
+    .pricing-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
-    /* Total Summary Block */
-    .total-block {
+    .pricing-row .val {
+      color: var(--text-highlight);
+      font-weight: 600;
+    }
+
+    .pricing-total-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 1rem;
-      margin-top: 0.5rem;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
+      color: var(--text-highlight);
     }
 
-    .total-label {
-      color: #cbd5e1;
+    .val-large {
+      font-size: 1.5rem;
     }
 
-    .total-val {
-      color: #22d3ee;
+    .val-large small {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: normal;
     }
 
-    /* Address Textarea */
-    .custom-textarea {
-      width: 100%;
-      background: rgba(15, 23, 42, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f8fafc;
-      border-radius: 8px;
-      padding: 0.85rem;
-      font-family: inherit;
-      font-size: 0.95rem;
-      resize: none;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-
-    .custom-textarea:focus {
-      border-color: #06b6d4;
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 2.5rem 1rem;
-      color: #64748b;
-      border: 1px dashed rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-    }
-
-    .empty-icon {
-      font-size: 2.5rem;
-      color: #475569;
-      margin-bottom: 0.75rem;
-    }
-
-    .mt-3 {
-      margin-top: 1rem;
-    }
-
-    /* Footer buttons */
-    .action-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 1.5rem;
-    }
-
-    .p-button-cyan {
-      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
-      border: none !important;
-      color: #ffffff !important;
-      font-weight: 600 !important;
-      padding: 0.65rem 1.75rem !important;
-      border-radius: 8px !important;
-    }
-
-    .p-button-cyan:hover {
-      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
-    }
-
-    .p-button-cyan[disabled] {
-      opacity: 0.5 !important;
-      background: #475569 !important;
-      cursor: not-allowed !important;
-    }
-
-    .p-button-cyan.p-button-outlined {
-      background: transparent !important;
-      border: 1px solid #06b6d4 !important;
-      color: #06b6d4 !important;
-    }
+    .mt-6 { margin-top: 1.5rem; }
+    .mt-8 { margin-top: 2rem; }
+    .pl-10 { padding-left: 2.5rem !important; }
   `]
 })
 export class CheckoutComponent implements OnInit {
-  address: string = '';
+  emailOrPhone: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  addressLine1: string = '';
+  addressLine2: string = '';
+  city: string = '';
+  state: string = 'Maharashtra';
+  pinCode: string = '';
+  country: string = 'India';
+  saveInfo: boolean = false;
+
   cartItems: CartItem[] = [];
   total: number = 0;
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private cartService: CartService
   ) {}
@@ -302,9 +535,12 @@ export class CheckoutComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    const saved = sessionStorage.getItem('shippingAddress');
-    if (saved) {
-      this.address = saved;
+    
+    // Load customer email if available
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      const user = JSON.parse(currentUser);
+      this.emailOrPhone = user.email || user.username || '';
     }
 
     // Subscribe to cart changes
@@ -314,14 +550,24 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  removeItem(productId: number | undefined) {
-    if (productId) {
-      this.cartService.removeFromCart(productId);
-    }
+  isFormValid(): boolean {
+    return (
+      this.emailOrPhone.trim().length > 3 &&
+      this.lastName.trim().length > 0 &&
+      this.addressLine1.trim().length > 3 &&
+      this.city.trim().length > 1 &&
+      this.pinCode.trim().length > 4
+    );
+  }
+
+  getCompiledAddress(): string {
+    const fullName = `${this.firstName} ${this.lastName}`.trim();
+    const l2 = this.addressLine2 ? `, ${this.addressLine2}` : '';
+    return `${fullName}\n${this.addressLine1}${l2}\n${this.city}, ${this.state} - ${this.pinCode}\n${this.country}`;
   }
 
   proceedToPayment() {
-    sessionStorage.setItem('shippingAddress', this.address);
+    sessionStorage.setItem('shippingAddress', this.getCompiledAddress());
     this.router.navigate(['/payment']);
   }
 }

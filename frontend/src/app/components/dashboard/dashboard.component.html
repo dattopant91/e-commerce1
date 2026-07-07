@@ -3,11 +3,19 @@
   <header class="dashboard-header glass-card">
     <div class="brand">
       <i class="pi pi-bolt logo-icon"></i>
-      <h1>AuraCart E-Commerce</h1>
+      <h1>Sandy Cart</h1>
       <span class="role-tag" *ngIf="isProductUser">{{ isAdmin ? 'Admin Console' : 'Vendor Console' }}</span>
     </div>
     
     <div class="header-actions">
+      <!-- Theme Toggle Button -->
+      <button pButton type="button" 
+              [icon]="isLightTheme ? 'pi pi-moon' : 'pi pi-sun'" 
+              class="p-button-rounded p-button-text theme-toggle-btn" 
+              (click)="toggleTheme()" 
+              [title]="isLightTheme ? 'Switch to Dark Mode' : 'Switch to Light Mode'">
+      </button>
+
       <!-- Search Bar & Sorting (Non-Admin Storefront only) -->
       <div class="search-bar" *ngIf="!isAdmin">
         <i class="pi pi-search search-icon"></i>
