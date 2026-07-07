@@ -34,7 +34,7 @@ import { Router, RouterModule } from '@angular/router';
 export class DashboardComponent implements OnInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
-  categories: string[] = ['All', 'Electronics', 'Footwear', 'Audio', 'Camera', 'Apparel'];
+  categories: string[] = ['All', 'Electronics', 'Apparel', 'Accessories'];
   selectedCategory: string = 'All';
   searchQuery: string = '';
   displayLimit: number = 12;

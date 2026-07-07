@@ -348,13 +348,13 @@
 /* Hero Banner */
 .hero-banner {
   position: relative;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+  background: var(--hero-bg);
   padding: 3rem;
   border-radius: 16px;
   overflow: hidden;
   display: flex;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 .hero-overlay {
@@ -373,7 +373,7 @@
 }
 
 .hero-tag {
-  background: linear-gradient(to right, #22d3ee, #818cf8);
+  background: var(--hero-tag-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 0.75rem;
@@ -387,13 +387,13 @@
 .hero-text-content h2 {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--hero-text);
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
 
 .hero-text-content p {
-  color: #94a3b8;
+  color: var(--text-color);
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0 0 1.75rem 0;
