@@ -25,7 +25,8 @@ import { Subscription } from 'rxjs';
 
         <!-- ACTIVE CART LIST -->
         <div *ngIf="items.length > 0">
-          <div class="table-wrapper">
+          <!-- Desktop Table Layout -->
+          <div class="table-wrapper hide-on-mobile">
             <p-table [value]="items" class="custom-table" [responsiveLayout]="'scroll'">
               <ng-template pTemplate="header">
                 <tr>
@@ -59,6 +60,28 @@ import { Subscription } from 'rxjs';
                 </tr>
               </ng-template>
             </p-table>
+          </div>
+
+          <!-- Mobile Cards Layout -->
+          <div class="mobile-cart-list show-on-mobile">
+            <div class="mobile-cart-item glass-card" *ngFor="let item of items">
+              <div class="item-product-info">
+                <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'" class="product-thumb" alt="product" />
+                <div class="product-details">
+                  <span class="product-name">{{ item.product.name }}</span>
+                  <span class="product-price">{{ item.product.price | currency }}</span>
+                </div>
+                <button pButton icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded remove-btn" (click)="removeItem(item.product.id)"></button>
+              </div>
+              <div class="item-actions-row">
+                <div class="qty-control">
+                  <button pButton icon="pi pi-minus" class="p-button-text p-button-sm qty-btn" (click)="decreaseQty(item)" [disabled]="item.quantity <= 1"></button>
+                  <span class="qty-number">{{ item.quantity }}</span>
+                  <button pButton icon="pi pi-plus" class="p-button-text p-button-sm qty-btn" (click)="increaseQty(item)"></button>
+                </div>
+                <span class="item-total">{{ (item.product.price * item.quantity) | currency }}</span>
+              </div>
+            </div>
           </div>
 
           <!-- FOOTER ACTIONS & CART TOTAL -->
@@ -125,6 +148,15 @@ import { Subscription } from 'rxjs';
 
     .mt-4 {
       margin-top: 1.5rem;
+    }
+
+    /* Desktop View vs Mobile View selectors */
+    .hide-on-mobile {
+      display: block;
+    }
+    
+    .show-on-mobile {
+      display: none;
     }
 
     /* Table custom styles */
@@ -243,6 +275,57 @@ import { Subscription } from 'rxjs';
     }
 
     @media (max-width: 768px) {
+      .hide-on-mobile {
+        display: none !important;
+      }
+      
+      .show-on-mobile {
+        display: flex !important;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .mobile-cart-item {
+        background: var(--panel-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+
+      .item-product-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .product-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+      }
+
+      .product-price {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .item-product-info .remove-btn {
+        position: absolute;
+        right: -0.5rem;
+        top: -0.25rem;
+      }
+
+      .item-actions-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.75rem;
+      }
+
       .cart-footer {
         flex-direction: column;
         gap: 1.5rem;

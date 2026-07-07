@@ -14,16 +14,17 @@ import { Router, RouterModule } from '@angular/router';
   template: `
     <div class="profile-outer-container animate-fade-in">
       <div class="profile-grid">
-        <!-- USER DETAILS CARD -->
-        <p-card styleClass="profile-glass-card">
+        
+        <!-- USER PROFILE CARD -->
+        <p-card header="Profile Overview" styleClass="profile-glass-card">
           <div class="user-card-header">
             <div class="profile-avatar">
               <span>{{ username.charAt(0).toUpperCase() }}</span>
             </div>
             <h2>{{ username }}</h2>
-            <span class="profile-role-tag">{{ isAdmin ? 'Administrator' : 'Customer Account' }}</span>
+            <span class="profile-role-tag">{{ isAdmin ? 'Admin' : 'Customer' }}</span>
           </div>
-          
+
           <div class="user-details-list">
             <div class="detail-row">
               <span class="detail-label"><i class="pi pi-envelope"></i> Email</span>
@@ -33,10 +34,6 @@ import { Router, RouterModule } from '@angular/router';
               <span class="detail-label"><i class="pi pi-shield"></i> Security Status</span>
               <span class="detail-val text-success">Verified Session</span>
             </div>
-            <div class="detail-row" *ngIf="isAdmin">
-              <span class="detail-label"><i class="pi pi-sliders-h"></i> Permissions</span>
-              <span class="detail-val">Full Read/Write</span>
-            </div>
           </div>
 
           <div class="profile-actions-footer">
@@ -44,7 +41,7 @@ import { Router, RouterModule } from '@angular/router';
           </div>
         </p-card>
 
-        <!-- ORDER HISTORY CARD -->
+        <!-- ORDER HISTORY CARD (CUSTOMERS ONLY) -->
         <p-card header="Order History" styleClass="orders-glass-card" *ngIf="!isAdmin">
           <p class="orders-subtitle">Manage and track your past transactions and purchases</p>
           
@@ -55,8 +52,8 @@ import { Router, RouterModule } from '@angular/router';
             <button pButton label="Start Shopping" routerLink="/" class="p-button-cyan p-button-outlined p-button-sm"></button>
           </div>
 
-          <!-- Orders Table -->
-          <div *ngIf="orders.length > 0" class="orders-table-wrapper">
+          <!-- Orders Table Layout (Desktop View) -->
+          <div *ngIf="orders.length > 0" class="orders-table-wrapper hide-on-mobile">
             <p-table [value]="orders" class="custom-orders-table" [responsiveLayout]="'scroll'">
               <ng-template pTemplate="header">
                 <tr>
@@ -89,35 +86,59 @@ import { Router, RouterModule } from '@angular/router';
               </ng-template>
             </p-table>
           </div>
+
+          <!-- Mobile Cards Layout (Mobile View) -->
+          <div *ngIf="orders.length > 0" class="mobile-orders-list show-on-mobile">
+            <div class="mobile-order-card" *ngFor="let order of orders">
+              <div class="mobile-order-header">
+                <span class="order-id">#{{ order.id }}</span>
+                <span class="status-badge" 
+                      [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
+                      [class.shipped]="order.status === 'SHIPPED'"
+                      [class.delivered]="order.status === 'DELIVERED'"
+                      [class.pending]="order.status === 'PENDING'" 
+                      [class.rejected]="order.status === 'REJECTED'">
+                  {{ order.status }}
+                </span>
+              </div>
+              <div class="mobile-order-body">
+                <div class="mobile-order-row">
+                  <span class="label">Date:</span>
+                  <span class="val">{{ order.orderDate | date:'mediumDate' }}</span>
+                </div>
+                <div class="mobile-order-products">
+                  {{ order.productsDescription || 'Products bundle details' }}
+                </div>
+                <div class="mobile-order-row total-row">
+                  <span class="label">Total Amount:</span>
+                  <span class="val price">{{ order.totalAmount | currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </p-card>
 
-        <!-- ADMIN INFO CARD -->
+        <!-- ADMIN INFO CARD (ADMINS ONLY) -->
         <p-card header="Administrative Statistics" styleClass="orders-glass-card" *ngIf="isAdmin">
           <p class="orders-subtitle">System settings overview and global metrics access controls.</p>
           <div class="admin-stats-box">
             <div class="admin-stat-item">
               <i class="pi pi-users stat-icon"></i>
               <div>
-                <h3>System Users</h3>
-                <p>12 Active Registered Accounts</p>
+                <h3>User Approvals Panel</h3>
+                <p>Register and promote user profiles directly from the console.</p>
               </div>
             </div>
             <div class="admin-stat-item">
-              <i class="pi pi-server stat-icon"></i>
+              <i class="pi pi-shopping-bag stat-icon"></i>
               <div>
-                <h3>Microservices</h3>
-                <p>7 Services Registered on Eureka</p>
-              </div>
-            </div>
-            <div class="admin-stat-item">
-              <i class="pi pi-database stat-icon"></i>
-              <div>
-                <h3>Database Pool</h3>
-                <p>Active MySQL Schema Pool Connections</p>
+                <h3>Order Shipment Reviews</h3>
+                <p>Review customer checkouts, confirm transactions, and dispatch orders.</p>
               </div>
             </div>
           </div>
         </p-card>
+
       </div>
     </div>
   `,
@@ -276,6 +297,15 @@ import { Router, RouterModule } from '@angular/router';
       margin: 0;
     }
 
+    /* Desktop vs Mobile selectors */
+    .hide-on-mobile {
+      display: block;
+    }
+
+    .show-on-mobile {
+      display: none;
+    }
+
     .orders-table-wrapper {
       background: var(--panel-bg);
       border: 1px solid var(--glass-border);
@@ -312,7 +342,7 @@ import { Router, RouterModule } from '@angular/router';
 
     .order-amount {
       font-weight: 600;
-      color: #f8fafc;
+      color: var(--text-color);
     }
 
     .status-badge {
@@ -398,6 +428,78 @@ import { Router, RouterModule } from '@angular/router';
       font-size: 0.85rem;
       color: var(--text-muted);
       margin: 0;
+    }
+
+    /* Mobile media queries for orders */
+    @media (max-width: 768px) {
+      .hide-on-mobile {
+        display: none !important;
+      }
+
+      .show-on-mobile {
+        display: flex !important;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .mobile-order-card {
+        background: var(--panel-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+
+      .mobile-order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .mobile-order-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .mobile-order-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+      }
+
+      .mobile-order-row .label {
+        color: var(--text-muted);
+      }
+
+      .mobile-order-row .val {
+        color: var(--text-color);
+        font-weight: 600;
+      }
+
+      .mobile-order-products {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.65rem 0.85rem;
+        border-radius: 8px;
+        white-space: pre-line;
+        line-height: 1.5;
+      }
+
+      .mobile-order-row.total-row {
+        border-top: 1px dashed var(--glass-border);
+        padding-top: 0.75rem;
+        margin-top: 0.25rem;
+      }
+
+      .mobile-order-row.total-row .val.price {
+        color: #22d3ee;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
     }
 
     /* Animation */
