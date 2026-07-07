@@ -434,4 +434,22 @@ export class DashboardComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/']);
   }
+
+  scrollToCatalog(): void {
+    const element = document.getElementById('catalog-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  subscribeEmail: string = '';
+
+  subscribeMock(): void {
+    if (this.subscribeEmail.trim().length > 3) {
+      alert(`Thank you for subscribing to the Sandy Cart newsletter: ${this.subscribeEmail}`);
+      this.subscribeEmail = '';
+    } else {
+      alert('Please enter a valid email address.');
+    }
+  }
 }

@@ -155,12 +155,12 @@
         <span class="hero-tag">Summer Tech Fest</span>
         <h2>Discover Next-Gen Innovations</h2>
         <p>Explore curated premium gear designed to elevate your digital ecosystem. Get up to 40% discount on selected audio & wearables.</p>
-        <button pButton label="Explore Catalog" class="p-button-cyan hero-btn" icon="pi pi-compass"></button>
+        <button pButton label="Explore Catalog" class="p-button-cyan hero-btn" icon="pi pi-compass" (click)="scrollToCatalog()"></button>
       </div>
     </section>
 
     <!-- Categories Filter Bar -->
-    <div class="categories-bar">
+    <div id="catalog-section" class="categories-bar">
       <button 
         *ngFor="let cat of categories" 
         class="category-btn" 
@@ -204,6 +204,63 @@
     <div class="load-more-container" *ngIf="hasMoreProducts">
       <button pButton label="Load More Products" icon="pi pi-angle-down" class="p-button-outlined p-button-cyan load-more-btn" (click)="loadMore()"></button>
     </div>
+
+    <!-- ==================== BRAND FOOTER ==================== -->
+    <footer class="sandy-footer glass-card mt-8">
+      <div class="footer-grid">
+        <!-- Grid Col 1: About -->
+        <div class="footer-col about-col">
+          <div class="footer-brand">
+            <img src="assets/logo.jpg" class="footer-logo" alt="Sandy Cart" />
+            <span>Sandy Cart</span>
+          </div>
+          <p class="footer-desc">
+            Sandy Cart is your ultimate destination for premium, next-generation technology accessories, audio gear, and lifestyle electronics. Designed to elevate your daily digital experience.
+          </p>
+        </div>
+
+        <!-- Grid Col 2: Quick Links -->
+        <div class="footer-col links-col">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a (click)="scrollToCatalog()" style="cursor: pointer;"><i class="pi pi-angle-right"></i> Explore Catalog</a></li>
+            <li><a routerLink="/cart"><i class="pi pi-angle-right"></i> Shopping Cart</a></li>
+            <li><a routerLink="/login"><i class="pi pi-angle-right"></i> Customer Login</a></li>
+          </ul>
+        </div>
+
+        <!-- Grid Col 3: Services -->
+        <div class="footer-col services-col">
+          <h3>Why Shop With Us?</h3>
+          <ul>
+            <li><i class="pi pi-shield footer-icon"></i> 100% Secure Payments</li>
+            <li><i class="pi pi-sync footer-icon"></i> 7-Day Free Returns</li>
+            <li><i class="pi pi-send footer-icon"></i> Fast Shipping Across India</li>
+          </ul>
+        </div>
+
+        <!-- Grid Col 4: Newsletter -->
+        <div class="footer-col newsletter-col">
+          <h3>Newsletter</h3>
+          <p>Subscribe to receive special offers, coupon codes, and tech updates.</p>
+          <div class="subscribe-form">
+            <input type="text" placeholder="Your email address" class="subscribe-input" [(ngModel)]="subscribeEmail" />
+            <button pButton label="Subscribe" (click)="subscribeMock()" class="p-button-cyan subscribe-btn"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Copyright Bar -->
+      <div class="footer-bottom-bar">
+        <span>© 2026 Sandy Cart Inc. All rights reserved.</span>
+        <div class="footer-socials">
+          <i class="pi pi-twitter"></i>
+          <i class="pi pi-facebook"></i>
+          <i class="pi pi-instagram"></i>
+          <i class="pi pi-github"></i>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <!-- Add/Edit Product Dialog Overlay (Admin only) -->
