@@ -171,18 +171,23 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     ::ng-deep .payment-glass-card {
-      background: rgba(30, 41, 59, 0.45) !important;
+      background: var(--card-bg) !important;
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid var(--glass-border) !important;
       border-radius: 16px !important;
       box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+      color: var(--text-color) !important;
+    }
+
+    ::ng-deep .payment-glass-card .p-card-title {
+      color: var(--text-highlight) !important;
     }
 
     .payment-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text-highlight);
       margin: 0 0 0.5rem 0;
       display: flex;
       align-items: center;
@@ -195,7 +200,7 @@ import { Router, RouterModule } from '@angular/router';
 
     .payment-subtitle {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin: 0 0 2rem 0;
     }
 
@@ -211,16 +216,16 @@ import { Router, RouterModule } from '@angular/router';
       justify-content: space-between;
       align-items: center;
       padding: 1.25rem 1.5rem;
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--item-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .method-option:hover {
-      background: rgba(15, 23, 42, 0.6);
-      border-color: rgba(34, 211, 238, 0.3);
+      background: var(--card-bg);
+      border-color: var(--neon-cyan);
       transform: translateY(-2px);
     }
 
@@ -238,7 +243,7 @@ import { Router, RouterModule } from '@angular/router';
 
     .option-icon {
       font-size: 1.75rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       transition: color 0.3s;
     }
 
@@ -249,19 +254,19 @@ import { Router, RouterModule } from '@angular/router';
     .option-text h3 {
       font-size: 1.05rem;
       font-weight: 600;
-      color: #f8fafc;
+      color: var(--text-color);
       margin: 0 0 0.25rem 0;
     }
 
     .option-text p {
       font-size: 0.8rem;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0;
     }
 
     .option-check {
       font-size: 1.25rem;
-      color: #475569;
+      color: var(--text-muted);
       transition: color 0.3s;
     }
 
@@ -273,7 +278,7 @@ import { Router, RouterModule } from '@angular/router';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--glass-border);
       padding-top: 1.5rem;
       margin-top: 1.5rem;
     }
@@ -322,13 +327,13 @@ import { Router, RouterModule } from '@angular/router';
     .form-field label {
       font-size: 0.85rem;
       font-weight: 600;
-      color: #94a3b8;
+      color: var(--text-muted);
     }
 
     .custom-input {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f8fafc;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-color);
       padding: 0.8rem 1rem;
       border-radius: 8px;
       font-size: 0.95rem;
@@ -349,7 +354,7 @@ import { Router, RouterModule } from '@angular/router';
 
     .helper-text {
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     .text-center {
@@ -369,7 +374,7 @@ import { Router, RouterModule } from '@angular/router';
 
     .info-text {
       font-size: 0.95rem;
-      color: #cbd5e1;
+      color: var(--text-color);
       line-height: 1.5;
     }
 
@@ -434,14 +439,14 @@ import { Router, RouterModule } from '@angular/router';
 
     .processing-status {
       font-size: 1.25rem;
-      color: #f8fafc;
+      color: var(--text-color);
       font-weight: 600;
       margin: 0 0 0.5rem 0;
     }
 
     .processing-disclaimer {
       font-size: 0.8rem;
-      color: #64748b;
+      color: var(--text-muted);
       margin: 0;
     }
 
@@ -514,14 +519,14 @@ import { Router, RouterModule } from '@angular/router';
 
     .success-msg {
       font-size: 0.95rem;
-      color: #cbd5e1;
+      color: var(--text-color);
       margin: 0 0 2rem 0;
     }
 
     .receipt-box {
       width: 100%;
-      background: rgba(15, 23, 42, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--item-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       display: flex;
@@ -537,12 +542,12 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     .receipt-label {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     .receipt-val {
       font-family: monospace;
-      color: #cbd5e1;
+      color: var(--text-color);
       font-size: 0.95rem;
     }
 

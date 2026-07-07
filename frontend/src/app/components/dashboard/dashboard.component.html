@@ -186,7 +186,7 @@
               {{ product.stock < 10 ? 'Only ' + product.stock + ' left!' : 'In Stock' }}
             </span>
           </div>
-          <div class="card-actions">
+          <div class="card-actions" style="position: relative; overflow: visible;">
             <button 
               pButton 
               type="button" 
@@ -194,9 +194,9 @@
               icon="pi pi-cart-plus" 
               class="p-button-cyan w-full add-to-cart-btn" 
               (click)="addToCart(product)">
-              <!-- Flying floating +1 feedback element -->
-              <span class="fly-badge" *ngIf="animatedProductId === product.id">+1 Added!</span>
             </button>
+            <!-- Flying floating +1 feedback element -->
+            <span class="fly-badge" *ngIf="animatedProductId === product.id">+1 Added!</span>
           </div>
         </div>
       </div>

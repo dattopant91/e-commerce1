@@ -85,12 +85,17 @@ import { Subscription } from 'rxjs';
     }
 
     ::ng-deep .glass-card {
-      background: rgba(30, 41, 59, 0.45) !important;
+      background: var(--card-bg) !important;
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid var(--glass-border) !important;
       border-radius: 16px !important;
       box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+      color: var(--text-color) !important;
+    }
+
+    ::ng-deep .glass-card .p-card-title {
+      color: var(--text-highlight) !important;
     }
 
     /* Empty Cart State */
@@ -101,19 +106,19 @@ import { Subscription } from 'rxjs';
 
     .empty-cart-icon {
       font-size: 4rem;
-      color: #475569;
+      color: var(--text-muted);
       margin-bottom: 1.5rem;
     }
 
     .empty-state-box h2 {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text-highlight);
       margin: 0 0 0.5rem 0;
     }
 
     .empty-state-box p {
-      color: #64748b;
+      color: var(--text-muted);
       font-size: 1rem;
       margin: 0;
     }
@@ -124,16 +129,16 @@ import { Subscription } from 'rxjs';
 
     /* Table custom styles */
     .table-wrapper {
-      background: rgba(15, 23, 42, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--panel-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 12px;
       overflow: hidden;
     }
 
     ::ng-deep .custom-table .p-datatable-thead > tr > th {
-      background: rgba(15, 23, 42, 0.5) !important;
-      color: #94a3b8 !important;
-      border-color: rgba(255, 255, 255, 0.05) !important;
+      background: var(--panel-bg) !important;
+      color: var(--text-muted) !important;
+      border-color: var(--glass-border) !important;
       font-size: 0.85rem !important;
       font-weight: 600 !important;
       padding: 1rem !important;
@@ -141,13 +146,14 @@ import { Subscription } from 'rxjs';
 
     ::ng-deep .custom-table .p-datatable-tbody > tr {
       background: transparent !important;
-      color: #cbd5e1 !important;
+      color: var(--text-color) !important;
     }
 
     ::ng-deep .custom-table .p-datatable-tbody > tr > td {
-      border-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: var(--glass-border) !important;
       padding: 1.25rem 1rem !important;
       vertical-align: middle;
+      color: var(--text-color) !important;
     }
 
     .product-cell {
@@ -161,17 +167,17 @@ import { Subscription } from 'rxjs';
       height: 50px;
       object-fit: cover;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
     }
 
     .product-name {
       font-weight: 600;
-      color: #f8fafc;
+      color: var(--text-color);
     }
 
     .item-total {
       font-weight: 600;
-      color: #cbd5e1;
+      color: var(--text-color);
     }
 
     /* Quantity Control Styles */
@@ -180,8 +186,8 @@ import { Subscription } from 'rxjs';
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 20px;
       padding: 0.25rem 0.5rem;
       width: fit-content;
@@ -189,7 +195,7 @@ import { Subscription } from 'rxjs';
     }
 
     ::ng-deep .qty-btn {
-      color: #22d3ee !important;
+      color: var(--neon-cyan) !important;
       padding: 0.25rem !important;
       width: 24px !important;
       height: 24px !important;
@@ -203,13 +209,13 @@ import { Subscription } from 'rxjs';
 
     ::ng-deep .qty-btn[disabled] {
       opacity: 0.3 !important;
-      color: #64748b !important;
+      color: var(--text-muted) !important;
     }
 
     .qty-number {
       font-weight: 700;
       font-size: 0.95rem;
-      color: #f8fafc;
+      color: var(--text-color);
       min-width: 1.5rem;
       text-align: center;
     }
@@ -232,7 +238,7 @@ import { Subscription } from 'rxjs';
       justify-content: space-between;
       align-items: center;
       margin-top: 2.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid var(--glass-border);
       padding-top: 1.5rem;
     }
 
@@ -259,7 +265,7 @@ import { Subscription } from 'rxjs';
     .total-label {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #94a3b8;
+      color: var(--text-muted);
     }
 
     .total-value {

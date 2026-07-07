@@ -326,7 +326,7 @@ export class DashboardComponent implements OnInit {
     setTimeout(() => {
       this.cartAnimating = false;
       this.animatedProductId = null;
-    }, 850);
+    }, 1200);
   }
 
   openNewProductDialog(): void {
