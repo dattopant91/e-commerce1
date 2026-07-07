@@ -145,10 +145,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(15, 23, 42, 0.35);
+  background: var(--item-bg, rgba(15, 23, 42, 0.35));
   padding: 0.35rem 0.75rem 0.35rem 0.35rem;
   border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
 }
 
 .avatar-circle {
@@ -172,12 +172,12 @@
 .welcome-text {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: var(--text-color, #cbd5e1);
 }
 
 .role-desc {
   font-size: 0.65rem;
-  color: #64748b;
+  color: var(--text-muted, #64748b);
   margin-top: -1px;
 }
 
