@@ -74,7 +74,7 @@
         </div>
         <div class="metric-details">
           <span class="metric-label">Total Revenue</span>
-          <h2 class="metric-value">{{ totalSales | currency:'USD':'symbol':'1.2-2' }}</h2>
+          <h2 class="metric-value">{{ totalSales | currency:'INR':'symbol':'1.2-2' }}</h2>
           <span class="metric-change positive"><i class="pi pi-arrow-up"></i> +12.4% this month</span>
         </div>
       </div>
@@ -133,7 +133,7 @@
               <small class="product-desc">{{ product.description }}</small>
             </td>
             <td data-label="Category"><span class="badge">{{ product.category }}</span></td>
-            <td data-label="Price" class="price">{{ product.price | currency:'USD' }}</td>
+            <td data-label="Price" class="price">{{ product.price | currency:'INR':'symbol':'1.2-2' }}</td>
             <td data-label="Stock">{{ product.stock }}</td>
             <td data-label="Status">
               <span class="status-badge" [class.approved]="product.status === 'APPROVED'" [class.pending]="product.status === 'PENDING'" [class.rejected]="product.status === 'REJECTED'">
@@ -191,7 +191,7 @@
           <h3 class="card-title" (click)="openProductDetails(product)" style="cursor: pointer;">{{ product.name }}</h3>
           <p class="card-desc">{{ product.description }}</p>
           <div class="card-bottom">
-            <span class="card-price">{{ product.price | currency }}</span>
+            <span class="card-price">{{ product.price | currency:'INR':'symbol':'1.2-2' }}</span>
             <span class="card-stock-alert" [class.low]="product.stock < 10">
               {{ product.stock < 10 ? 'Only ' + product.stock + ' left!' : 'In Stock' }}
             </span>
@@ -324,7 +324,7 @@
         <div class="detail-meta-row">
           <div class="detail-price-box">
             <span class="meta-label">Price</span>
-            <span class="meta-val price-val">{{ selectedDetailProduct.price | currency }}</span>
+            <span class="meta-val price-val">{{ selectedDetailProduct.price | currency:'INR':'symbol':'1.2-2' }}</span>
           </div>
           <div class="detail-stock-box">
             <span class="meta-label">Availability</span>
@@ -417,7 +417,7 @@
             <td style="color: #cbd5e1; max-width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" [title]="order.productsDescription || 'E-Commerce products bundle'">
               {{ order.productsDescription || 'E-Commerce products bundle' }}
             </td>
-            <td class="price">{{ order.totalAmount | currency }}</td>
+            <td class="price">{{ order.totalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
             <td>
               <span class="status-badge" 
                     [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
@@ -464,7 +464,7 @@
           </div>
           <div class="detail-row" style="display: flex; justify-content: space-between; font-size: 0.9rem;">
             <span class="detail-label" style="color: #64748b; display: flex; align-items: center; gap: 0.5rem;"><i class="pi pi-wallet"></i> Total Amount</span>
-            <span class="detail-val price-val" style="color: #22d3ee; font-weight: 700; font-size: 1.15rem;">{{ selectedOrderForApproval.totalAmount | currency }}</span>
+            <span class="detail-val price-val" style="color: #22d3ee; font-weight: 700; font-size: 1.15rem;">{{ selectedOrderForApproval.totalAmount | currency:'INR':'symbol':'1.2-2' }}</span>
           </div>
         </div>
 

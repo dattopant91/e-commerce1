@@ -45,7 +45,7 @@ import { Subscription } from 'rxjs';
                       <span class="product-name">{{ item.product.name }}</span>
                     </div>
                   </td>
-                  <td>{{ item.product.price | currency }}</td>
+                  <td>{{ item.product.price | currency:'INR':'symbol':'1.2-2' }}</td>
                   <td>
                     <div class="qty-control">
                       <button pButton icon="pi pi-minus" class="p-button-text p-button-sm qty-btn" (click)="decreaseQty(item)" [disabled]="item.quantity <= 1"></button>
@@ -53,7 +53,7 @@ import { Subscription } from 'rxjs';
                       <button pButton icon="pi pi-plus" class="p-button-text p-button-sm qty-btn" (click)="increaseQty(item)"></button>
                     </div>
                   </td>
-                  <td class="item-total">{{ (item.product.price * item.quantity) | currency }}</td>
+                  <td class="item-total">{{ (item.product.price * item.quantity) | currency:'INR':'symbol':'1.2-2' }}</td>
                   <td style="text-align: center;">
                     <button pButton icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded remove-btn" (click)="removeItem(item.product.id)" title="Remove item"></button>
                   </td>
@@ -69,7 +69,7 @@ import { Subscription } from 'rxjs';
                 <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'" class="product-thumb" alt="product" />
                 <div class="product-details">
                   <span class="product-name">{{ item.product.name }}</span>
-                  <span class="product-price">{{ item.product.price | currency }}</span>
+                  <span class="product-price">{{ item.product.price | currency:'INR':'symbol':'1.2-2' }}</span>
                 </div>
                 <button pButton icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded remove-btn" (click)="removeItem(item.product.id)"></button>
               </div>
@@ -79,7 +79,7 @@ import { Subscription } from 'rxjs';
                   <span class="qty-number">{{ item.quantity }}</span>
                   <button pButton icon="pi pi-plus" class="p-button-text p-button-sm qty-btn" (click)="increaseQty(item)"></button>
                 </div>
-                <span class="item-total">{{ (item.product.price * item.quantity) | currency }}</span>
+                <span class="item-total">{{ (item.product.price * item.quantity) | currency:'INR':'symbol':'1.2-2' }}</span>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@ import { Subscription } from 'rxjs';
           <div class="cart-footer">
             <div class="total-summary">
               <span class="total-label">Total Amount:</span>
-              <span class="total-value">{{ total | currency }}</span>
+              <span class="total-value">{{ total | currency:'INR':'symbol':'1.2-2' }}</span>
             </div>
             
             <div class="action-buttons">

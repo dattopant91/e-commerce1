@@ -18,7 +18,7 @@ import { Router, RouterModule } from '@angular/router';
         <!-- STEP 1: PAYMENT METHOD SELECTION -->
         <div *ngIf="step === 'selection'">
           <h2 class="payment-title"><i class="pi pi-credit-card title-icon"></i> Choose Payment Method</h2>
-          <p class="payment-subtitle">Select a payment option to complete your purchase of {{ total | currency }}</p>
+          <p class="payment-subtitle">Select a payment option to complete your purchase of {{ total | currency:'INR':'symbol':'1.2-2' }}</p>
           
           <div class="methods-list">
             <div class="method-option" [class.selected]="selectedMethod === 'card'" (click)="selectMethod('card')">
@@ -152,7 +152,7 @@ import { Router, RouterModule } from '@angular/router';
             </div>
             <div class="receipt-row">
               <span class="receipt-label">Total Amount Paid</span>
-              <span class="receipt-val total">{{ total | currency }}</span>
+              <span class="receipt-val total">{{ total | currency:'INR':'symbol':'1.2-2' }}</span>
             </div>
           </div>
 
