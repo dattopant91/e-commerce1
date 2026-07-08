@@ -153,7 +153,7 @@ import { Router, RouterModule } from '@angular/router';
     <!-- HIDDEN PRINT INVOICE SHEET (ONLY VISIBLE DURING window.print()) -->
     <div class="print-invoice-sheet" *ngIf="selectedOrderForPrint">
       <div class="invoice-header">
-        <h1>AURA CART</h1>
+        <h1>SANDY CART</h1>
         <p>Premium Curated E-Commerce Marketplace</p>
       </div>
       <hr/>
