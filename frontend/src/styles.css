@@ -108,3 +108,34 @@ body {
   background: var(--panel-bg) !important;
   color: var(--text-muted) !important;
 }
+
+/* Print styles for Receipt Download / Print Invoice */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .dashboard-header, 
+  .action-footer, 
+  .theme-toggle-btn, 
+  button, 
+  a, 
+  .cart-container {
+    display: none !important;
+  }
+  .payment-outer-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  ::ng-deep .payment-glass-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+  }
+  .receipt-box {
+    border: 1px solid #000000 !important;
+    padding: 1.5rem !important;
+    color: #000000 !important;
+  }
+}

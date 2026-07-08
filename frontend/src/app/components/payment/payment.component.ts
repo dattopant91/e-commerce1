@@ -156,8 +156,9 @@ import { Router, RouterModule } from '@angular/router';
             </div>
           </div>
 
-          <div class="action-footer justify-center mt-6">
+          <div class="action-footer justify-center mt-6" style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
             <button pButton label="Continue Shopping" (click)="completeCheckoutFlow()" class="p-button-cyan w-full"></button>
+            <button pButton label="Download Invoice / Print Receipt" icon="pi pi-print" (click)="printInvoice()" class="p-button-cyan p-button-outlined w-full" style="padding: 0.65rem !important;"></button>
           </div>
         </div>
       </p-card>
@@ -695,5 +696,9 @@ export class PaymentComponent implements OnInit {
   completeCheckoutFlow() {
     this.cartService.clearCart();
     this.router.navigate(['/']);
+  }
+
+  printInvoice() {
+    window.print();
   }
 }
