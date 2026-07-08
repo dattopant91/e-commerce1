@@ -12,6 +12,7 @@ import { Router, RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, CardModule, ButtonModule, TableModule, RouterModule],
   template: `
+    <!-- MAIN DISPLAY CONTENT -->
     <div class="profile-outer-container animate-fade-in">
       <div class="profile-grid">
         
@@ -62,16 +63,17 @@ import { Router, RouterModule } from '@angular/router';
                   <th>Products Purchased</th>
                   <th>Total Amount</th>
                   <th>Status</th>
+                  <th style="width: 80px; text-align: center;">Invoice</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-order>
                 <tr>
                   <td class="order-id">#{{ order.id }}</td>
                   <td>{{ order.orderDate | date:'medium' }}</td>
-                  <td style="color: #cbd5e1; max-width: 300px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" [title]="order.productsDescription || 'E-Commerce products bundle'">
+                  <td style="color: #cbd5e1; max-width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" [title]="order.productsDescription || 'E-Commerce products bundle'">
                     {{ order.productsDescription || 'E-Commerce products bundle' }}
                   </td>
-                  <td class="order-amount">{{ order.totalAmount | currency }}</td>
+                  <td class="order-amount">{{ order.totalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
                   <td>
                     <span class="status-badge" 
                           [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
@@ -81,6 +83,9 @@ import { Router, RouterModule } from '@angular/router';
                           [class.rejected]="order.status === 'REJECTED'">
                       {{ order.status }}
                     </span>
+                  </td>
+                  <td style="text-align: center;">
+                    <button pButton icon="pi pi-print" class="p-button-cyan p-button-text p-button-rounded print-btn" (click)="printInvoice(order)" title="Print Invoice" style="padding: 0.25rem !important; height: 32px; width: 32px;"></button>
                   </td>
                 </tr>
               </ng-template>
@@ -92,14 +97,17 @@ import { Router, RouterModule } from '@angular/router';
             <div class="mobile-order-card" *ngFor="let order of orders">
               <div class="mobile-order-header">
                 <span class="order-id">#{{ order.id }}</span>
-                <span class="status-badge" 
-                      [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
-                      [class.shipped]="order.status === 'SHIPPED'"
-                      [class.delivered]="order.status === 'DELIVERED'"
-                      [class.pending]="order.status === 'PENDING'" 
-                      [class.rejected]="order.status === 'REJECTED'">
-                  {{ order.status }}
-                </span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <button pButton icon="pi pi-print" class="p-button-cyan p-button-text p-button-rounded" (click)="printInvoice(order)" title="Print Receipt" style="padding: 0.15rem !important; height: 28px; width: 28px; font-size: 0.9rem;"></button>
+                  <span class="status-badge" 
+                        [class.approved]="order.status === 'APPROVED' || order.status === 'PAID'" 
+                        [class.shipped]="order.status === 'SHIPPED'"
+                        [class.delivered]="order.status === 'DELIVERED'"
+                        [class.pending]="order.status === 'PENDING'" 
+                        [class.rejected]="order.status === 'REJECTED'">
+                    {{ order.status }}
+                  </span>
+                </div>
               </div>
               <div class="mobile-order-body">
                 <div class="mobile-order-row">
@@ -111,7 +119,7 @@ import { Router, RouterModule } from '@angular/router';
                 </div>
                 <div class="mobile-order-row total-row">
                   <span class="label">Total Amount:</span>
-                  <span class="val price">{{ order.totalAmount | currency }}</span>
+                  <span class="val price">{{ order.totalAmount | currency:'INR':'symbol':'1.2-2' }}</span>
                 </div>
               </div>
             </div>
@@ -139,6 +147,33 @@ import { Router, RouterModule } from '@angular/router';
           </div>
         </p-card>
 
+      </div>
+    </div>
+
+    <!-- HIDDEN PRINT INVOICE SHEET (ONLY VISIBLE DURING window.print()) -->
+    <div class="print-invoice-sheet" *ngIf="selectedOrderForPrint">
+      <div class="invoice-header">
+        <h1>AURA CART</h1>
+        <p>Premium Curated E-Commerce Marketplace</p>
+      </div>
+      <hr/>
+      <div class="invoice-details">
+        <p><strong>Order Reference ID:</strong> #{{ selectedOrderForPrint.id }}</p>
+        <p><strong>Order Placement Date:</strong> {{ selectedOrderForPrint.orderDate | date:'medium' }}</p>
+        <p><strong>Customer Name:</strong> {{ username }}</p>
+        <p><strong>Customer Registered Email:</strong> {{ email }}</p>
+        <p><strong>Order Tracking Status:</strong> {{ selectedOrderForPrint.status }}</p>
+      </div>
+      <hr/>
+      <div class="invoice-products">
+        <h3>Purchased Items Details</h3>
+        <p style="white-space: pre-line; line-height: 1.6; font-size: 0.95rem; background: #f8fafc; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+          {{ selectedOrderForPrint.productsDescription || 'E-Commerce products bundle' }}
+        </p>
+      </div>
+      <hr/>
+      <div class="invoice-total">
+        <h2>Total Amount Paid: {{ selectedOrderForPrint.totalAmount | currency:'INR':'symbol':'1.2-2' }}</h2>
       </div>
     </div>
   `,
@@ -388,6 +423,16 @@ import { Router, RouterModule } from '@angular/router';
       border: 1px solid rgba(239, 68, 68, 0.3) !important;
     }
 
+    /* Print Button Style */
+    ::ng-deep .print-btn {
+      color: #22d3ee !important;
+      transition: all 0.2s;
+    }
+    ::ng-deep .print-btn:hover {
+      background: rgba(34, 211, 238, 0.1) !important;
+      transform: scale(1.1);
+    }
+
     /* Admin statistics styles */
     .admin-stats-box {
       display: flex;
@@ -502,6 +547,62 @@ import { Router, RouterModule } from '@angular/router';
       }
     }
 
+    /* Print styles */
+    .print-invoice-sheet {
+      display: none;
+    }
+
+    @media print {
+      .profile-outer-container, 
+      .dashboard-header, 
+      .theme-toggle-btn, 
+      button, 
+      a {
+        display: none !important;
+      }
+      
+      .print-invoice-sheet {
+        display: block !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 2.5rem !important;
+        font-family: sans-serif;
+      }
+      
+      .invoice-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      .invoice-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+      }
+      
+      .invoice-header p {
+        margin: 0.25rem 0 0 0;
+        color: #555555;
+        font-size: 0.9rem;
+      }
+      
+      .invoice-details p {
+        margin: 0.5rem 0;
+        font-size: 0.95rem;
+      }
+      
+      .invoice-products h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.15rem;
+      }
+      
+      .invoice-total {
+        text-align: right;
+        margin-top: 2.5rem;
+      }
+    }
+
     /* Animation */
     .animate-fade-in {
       animation: fadeIn 0.4s ease-out forwards;
@@ -518,6 +619,7 @@ export class ProfileComponent implements OnInit {
   email = '';
   isAdmin = false;
   orders: any[] = [];
+  selectedOrderForPrint: any = null;
 
   constructor(
     private authService: AuthService,
@@ -552,5 +654,12 @@ export class ProfileComponent implements OnInit {
         console.warn('Failed to load orders, fallback simulation details.');
       }
     });
+  }
+
+  printInvoice(order: any) {
+    this.selectedOrderForPrint = order;
+    setTimeout(() => {
+      window.print();
+    }, 150);
   }
 }
